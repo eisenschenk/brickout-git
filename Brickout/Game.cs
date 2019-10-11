@@ -91,7 +91,7 @@ namespace Brickout
 
             if (BallMovementIsValid(elapsed))
             {
-                if (player.BallIsHitting(ballLine))
+                if (player.IsHit(ballLine))
                     Ball.Direction = Ball.BouncePlayer(player.LineIsHit, ballLine, player);
                 else if (gameboard.BallHitsWall(Ball))
                     Ball.Direction.X *= -1;

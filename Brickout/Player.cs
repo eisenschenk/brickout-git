@@ -18,10 +18,8 @@ namespace Brickout
             Life = 3;
             Speed = 0.3f;
             float halfBallSize = 10;
-            Left = new Lines(new Vector2(Position.X, Position.Y), new Vector2(Position.X, Position.Y + halfBallSize + Size.Y));
-            Right = new Lines(new Vector2(Position.X + Size.X + halfBallSize, Position.Y), new Vector2(Position.X + Size.X + halfBallSize, Position.Y + Size.Y + halfBallSize));
-            Top = new Lines(new Vector2(Position.X, Position.Y), new Vector2(Position.X + halfBallSize, Position.Y));
-            Bottom = new Lines(new Vector2(Position.X, Position.Y + Size.Y + halfBallSize), new Vector2(Position.X + Size.X + halfBallSize, Position.Y + Size.Y + halfBallSize));
+
+
 
         }
         public bool IsValidMovementLeft(Player player, Gameboard gameboard)
@@ -33,6 +31,17 @@ namespace Brickout
         {
             Player playerR = new Player(new Vector2(player.Position.X + 1, player.Position.Y));
             return (gameboard.IncludesGameObject(playerR));
+        }
+        public bool IsHit(Lines ballLine)
+        {
+            float halfBallSize = 10;
+            Top = new Lines(new Vector2(Position.X, Position.Y), new Vector2(Position.X + Size.X + halfBallSize, Position.Y));
+            if (Top.LineSegmentIntersection(ballLine) != new Vector2(0, 0))
+            {
+                LineIsHit = Top;
+                return true;
+            }
+            return false;
         }
     }
 }

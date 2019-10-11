@@ -29,9 +29,9 @@ namespace Brickout
             Vector2 bounceVektor = Vector2.Reflect(Direction, line.Vector) * -1; ;
 
             if (ballLine.End.X <= player.Position.X + player.Size.X / 2)
-                bounceVektor.X = -1 * (float)Math.Sqrt(bounceVektor.X * bounceVektor.X) * (player.Position.X + player.Size.X / 2) / ballLine.End.X;
+                bounceVektor.X = -1 * Math.Abs(bounceVektor.X) * (player.Position.X + player.Size.X / 2) / ballLine.End.X;
             else
-                bounceVektor.X = (float)Math.Sqrt(bounceVektor.X * bounceVektor.X) * (player.Position.X + player.Size.X) / ballLine.End.X;
+                bounceVektor.X = Math.Abs(bounceVektor.X) * (player.Position.X + player.Size.X) / ballLine.End.X;
 
             return bounceVektor;
         }
