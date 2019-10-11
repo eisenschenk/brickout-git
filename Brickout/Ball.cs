@@ -16,6 +16,8 @@ namespace Brickout
             Direction = new Vector2(10, -10);
 
         }
+        //Bounce wird ausgeführt wenn die ballLine eine der Seiten des Bricks etc schneidet 
+        //FIX--> Bounce erst wenn der Ball den Schnittpunkt erreicht.
         public Vector2 BounceBrick(Lines line, Lines ballLine)
         {
 
