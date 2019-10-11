@@ -21,8 +21,8 @@ namespace Brickout
     static class Program
     {
         private const string FormCaption = "Brickout";
-        private const int Width = 800;
-        private const int Height = 600;
+        private const int Width = 1200;
+        private const int Height = 900;
         private const int Fps = 60;
         private const bool Fullscreen = false;
 

@@ -27,12 +27,13 @@ namespace Brickout
         {
             line.Vector.Normalize();
             Vector2 bounceVektor = Vector2.Reflect(Direction, line.Vector) * -1; ;
-
+            bounceVektor.Y = -0.75f;
             if (ballLine.End.X <= player.Position.X + player.Size.X / 2)
                 bounceVektor.X = -1 * Math.Abs(bounceVektor.X) * (player.Position.X + player.Size.X / 2) / ballLine.End.X;
             else
                 bounceVektor.X = Math.Abs(bounceVektor.X) * (player.Position.X + player.Size.X) / ballLine.End.X;
 
+            bounceVektor.Normalize();
             return bounceVektor;
         }
     }

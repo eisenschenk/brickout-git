@@ -18,8 +18,8 @@ namespace Brickout
         public int Height;
         public int[][] GameBoard;
 
-        public Gameboard(int width, int height, string level, List<Brick> brickList) 
-            :base(new Vector2(0,0), new Vector2(width, height), new RawRectangleF())
+        public Gameboard(int width, int height, string level, List<Brick> brickList)
+            : base(new Vector2(0, 0), new Vector2(width, height), new RawRectangleF())
         {
             Width = width;
             Height = height;
@@ -40,11 +40,11 @@ namespace Brickout
         }
         public bool BallHitsWall(Ball ball)
         {
-            return (ball.Position.X <= 0 || ball.Position.X >= Width);
+            return (ball.Position.X + ball.Size.X / 2 <= 0 || ball.Position.X + ball.Size.X / 2 >= Width);
         }
         public bool BallHitsTop(Ball ball)
         {
-            return ( ball.Position.Y <= 0);
+            return (ball.Position.Y + ball.Size.Y / 2 <= 0);
         }
 
 

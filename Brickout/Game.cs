@@ -112,17 +112,13 @@ namespace Brickout
         }
         public void BrickGetsHit()
         {
-            // Vector2 ballPlusSize = new Vector2(Ball.Position.X + Ball.Size.X / 2, Ball.Position.Y + Ball.Size.Y / 2);
-
             Ball.Direction.Normalize();
             Vector2 newBallPosition = new Vector2(Ball.Position.X + Ball.Size.X, Ball.Position.Y + Ball.Size.Y) + Ball.Speed * Elapsed * Ball.Direction;
             Lines ballLine = new Lines(Ball.Position, newBallPosition);
             foreach (Brick brick in BrickList.ToArray())
             {
-
                 if (brick.BallIsHitting(ballLine))
                 {
-
                     Ball.Direction = Ball.BounceBrick(brick.LineIsHit, ballLine) * -1;
                     brick.Durability--;
                     if (brick.Durability == 0)
