@@ -66,24 +66,10 @@ namespace Brickout
         {
             return (position.X >= Position.X && position.X <= Position.X + Size.X && position.Y >= Position.Y && position.Y <= Position.Y + Size.Y);
         }
-
         public bool IncludesGameObject(GameObject gameObject)
         {
             Vector2 positionPlusSize = new Vector2(gameObject.Position.X + gameObject.Size.X, gameObject.Position.Y + gameObject.Size.Y);
             return (IncludesPoint(gameObject.Position) && IncludesPoint(positionPlusSize));
         }
-
-
-
-        //public bool Hits(GameObject gameObject)
-        //{
-        //    Vector2 lt = new Vector2(gameObject.Position.X, gameObject.Position.Y);
-        //    Vector2 lb = new Vector2(gameObject.Position.X, gameObject.Position.Y + gameObject.Size.Y);
-        //    Vector2 rt = new Vector2(gameObject.Position.X + gameObject.Size.X, gameObject.Position.Y);
-        //    Vector2 rb = new Vector2(gameObject.Position.X + gameObject.Size.X, gameObject.Position.Y + gameObject.Size.Y);
-
-        //    return (IncludesPoint(lt) || IncludesPoint(lb) || IncludesPoint(rt) || IncludesPoint(rb));
-        //}
-
     }
 }

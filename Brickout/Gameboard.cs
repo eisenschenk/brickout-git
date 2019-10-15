@@ -41,15 +41,5 @@ namespace Brickout
                     brickList.Add(new Brick(new Vector2(brickX, brickY), GameBoard[outerIndex][innerIndex], ball));
                 }
         }
-        public bool BallHitsWall(Ball ball)
-        {
-            return (ball.Position.X + ball.Size.X <= 0 || ball.Position.X + ball.Size.X >= Width);
-        }
-        public bool BallHitsTop(Ball ball)
-        {
-            return (ball.Position.Y + ball.Size.Y <= 0);
-        }
-
-
     }
 }

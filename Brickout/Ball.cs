@@ -13,7 +13,7 @@ namespace Brickout
 
         public Ball() : base(new Vector2(600, 600), new Vector2(), new RawRectangleF(48, 136, 56, 144))
         {
-            Speed = 100;
+            Speed = 200;
             Direction = new Vector2(10, -10);
             Size = BallSize;
         }
@@ -29,13 +29,10 @@ namespace Brickout
             line.Vector.Normalize();
             Vector2 bounceVektor = Vector2.Reflect(Direction, line.Vector) * -1; ;
             bounceVektor.Y = -1.2f + Math.Abs(bounceVektor.X);
-            //statt  ballLine.end --> schnittpunkt mit player
-            //von -1/0 zu 0/-1 zu 1,0 mit y = -1 + abs(x)
             if (ballLine.End.X <= player.Position.X + player.Size.X / 2)
                 bounceVektor.X = -1 * Math.Abs(bounceVektor.X) * (player.Position.X + player.Size.X / 2) / ballLine.End.X;
             else
                 bounceVektor.X = Math.Abs(bounceVektor.X) * (player.Position.X + player.Size.X) / ballLine.End.X;
-
             bounceVektor.Normalize();
             return bounceVektor;
         }

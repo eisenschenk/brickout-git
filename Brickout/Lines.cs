@@ -12,50 +12,13 @@ namespace Brickout
         public Vector2 Start;
         public Vector2 End;
         public Vector2 Vector;
-
-
-
         public Lines(Vector2 start, Vector2 end)
         {
             Start = start;
             End = end;
             Vector = new Vector2(End.X - Start.X, End.Y - Start.Y);
-
-
         }
-
-        public float SlopeM(Vector2 start, Vector2 end)
-        {
-            return (end.Y - start.Y) / (end.X - start.X);
-        }
-        public float YInterceptB(Vector2 start, Vector2 end)
-        {
-            return (start.Y / (SlopeM(start, end) * start.X));
-        }
-        public float LineIntersectionX(Vector2 start1, Vector2 end1, Vector2 start2, Vector2 end2)
-        {
-            return (YInterceptB(start2, end2) - YInterceptB(start1, end1)) / (SlopeM(start1, end1) - SlopeM(start2, end2));
-        }
-
-        public float LineIntersectionY(Vector2 start1, Vector2 end1, Vector2 start2, Vector2 end2)
-        {
-            return (LineIntersectionX(start1, end1, start2, end2) * SlopeM(start1, end1) + YInterceptB(start1, end1));
-        }
-        public Vector2 GetIntersection(Lines line)
-        {
-            return (new Vector2(LineIntersectionX(Start, End, line.Start, line.End), LineIntersectionY(Start, End, line.Start, line.End)));
-        }
-        public bool AreIntersecting(Lines line)
-        {
-            float x = 0;
-            float y = 0;
-            x = LineIntersectionX(Start, End, line.Start, line.End);
-            y = LineIntersectionY(Start, End, line.Start, line.End);
-            return (x != 0 && y != 0);
-        }
-        
-
-        //http://www.cs.swan.ac.uk/~cssimon/line_intersection.html
+        //calculation: http://www.cs.swan.ac.uk/~cssimon/line_intersection.html
         public Vector2 LineSegmentIntersection(Lines line)
         {
             float tA = -1;
@@ -70,7 +33,6 @@ namespace Brickout
                 tA = tALineTop / tALineBottom;
                 tB = tBLineTop / tBLineBottom;
             }
-
             if (0 <= tA && tA <= 1 && 0 <= tB && tB <= 1)
             {
                 float x = Start.X + tA * (End.X - Start.X);

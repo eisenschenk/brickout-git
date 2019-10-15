@@ -32,12 +32,6 @@ namespace Brickout
         [STAThread]
         static void Main()
         {
-            var line1 = new Lines(new Vector2(4, 2), new Vector2(4, 4));
-            var line2 = new Lines(new Vector2(4, 2), new Vector2(2, 4));
-
-            var intersect = line1.LineSegmentIntersection(line2);
-
-
             using (RenderForm form = new RenderForm(FormCaption))
             using (D2DFactory d2dFactory = new D2DFactory())
             {
