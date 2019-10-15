@@ -18,6 +18,10 @@ namespace Brickout
         public int Height;
         public int[][] GameBoard;
 
+        public override Lines Left => new Lines(new Vector2(BallSize.X, BallSize.Y), new Vector2(BallSize.X, Height));
+        public override Lines Top => new Lines(new Vector2(BallSize.X, BallSize.Y), new Vector2(Width - BallSize.X, BallSize.Y));
+        public override Lines Right => new Lines(new Vector2(Width, BallSize.Y), new Vector2(Width, Height));
+        public override Lines Bottom => new Lines(new Vector2(0, Height + BallSize.Y*5), new Vector2(Width, Height + BallSize.Y*5));
         public Gameboard(int width, int height, string level, List<Brick> brickList)
             : base(new Vector2(0, 0), new Vector2(width, height), new RawRectangleF())
         {
@@ -26,7 +30,6 @@ namespace Brickout
             GameBoard = JsonConvert.DeserializeObject<int[][]>(File.ReadAllText(level));
             FillList(width, height, brickList);
         }
-
         public void FillList(int width, int height, List<Brick> brickList)
         {
             Ball ball = new Ball();
@@ -40,11 +43,11 @@ namespace Brickout
         }
         public bool BallHitsWall(Ball ball)
         {
-            return (ball.Position.X + ball.Size.X / 2 <= 0 || ball.Position.X + ball.Size.X / 2 >= Width);
+            return (ball.Position.X + ball.Size.X <= 0 || ball.Position.X + ball.Size.X >= Width);
         }
         public bool BallHitsTop(Ball ball)
         {
-            return (ball.Position.Y + ball.Size.Y / 2 <= 0);
+            return (ball.Position.Y + ball.Size.Y <= 0);
         }
 
 

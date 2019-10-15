@@ -11,13 +11,14 @@ namespace Brickout
     class Ball : GameObject
     {
 
-        public Ball() : base(new Vector2(600, 600), new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
+        public Ball() : base(new Vector2(600, 600), new Vector2(), new RawRectangleF(48, 136, 56, 144))
         {
             Speed = 100;
             Direction = new Vector2(10, -10);
+            Size = BallSize;
         }
         public Vector2 BRPoint => Position + Size;
-        public Vector2 BounceBrick(Lines line, Lines ballLine)
+        public Vector2 Bounce(Lines line, Lines ballLine)
         {
             line.Vector.Normalize();
             return Vector2.Reflect(Direction, line.Vector) * -1;

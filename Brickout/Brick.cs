@@ -14,12 +14,12 @@ namespace Brickout
         public Brick(Vector2 position, int durability, Ball ball) : base(position, new Vector2(70, 30), ReturnBrick(durability))
         {
             Durability = durability;
-            Left = new Lines(new Vector2(Position.X, Position.Y), new Vector2(Position.X, Position.Y + ball.Size.Y+ Size.Y));
-            Right = new Lines(new Vector2(Position.X + Size.X + ball.Size.X, Position.Y), new Vector2(Position.X + Size.X + 
-                ball.Size.X, Position.Y + Size.Y + ball.Size.Y));
-            Top = new Lines(new Vector2(Position.X, Position.Y), new Vector2(Position.X + Size.X + ball.Size.X, Position.Y));
-            Bottom = new Lines(new Vector2(Position.X, Position.Y + Size.Y + ball.Size.Y), new Vector2(Position.X + Size.X + 
-                ball.Size.X, Position.Y + Size.Y + ball.Size.Y));
+            //Left = new Lines(new Vector2(Position.X, Position.Y), new Vector2(Position.X, Position.Y + ball.Size.Y+ Size.Y));
+            //Right = new Lines(new Vector2(Position.X + Size.X + ball.Size.X, Position.Y), new Vector2(Position.X + Size.X + 
+            //    ball.Size.X, Position.Y + Size.Y + ball.Size.Y));
+            //Top = new Lines(new Vector2(Position.X, Position.Y), new Vector2(Position.X + Size.X + ball.Size.X, Position.Y));
+            //Bottom = new Lines(new Vector2(Position.X, Position.Y + Size.Y + ball.Size.Y), new Vector2(Position.X + Size.X + 
+            //    ball.Size.X, Position.Y + Size.Y + ball.Size.Y));
         }
 
         private static RawRectangleF ReturnBrick(int durability)

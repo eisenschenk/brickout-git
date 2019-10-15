@@ -100,11 +100,7 @@ namespace Brickout
             Vector2 newBallPosition = Ball.BRPoint + Ball.Direction * BallDistance;
             Lines ballLine = new Lines(Ball.BRPoint, newBallPosition);
 
-            BrickGetsHit(ballLine);
-            PlayerGetsHit(ballLine);
-            WallsGetHit(ballLine);
-
-
+            GameobjectGotHit(ballLine);
             if (!hasBounced)
             {
                 Ball.Direction.Normalize();
@@ -112,41 +108,42 @@ namespace Brickout
             }
             hasBounced = false;
         }
-        public void BrickGetsHit(Lines ballLine)
+
+        public void GameobjectGotHit(Lines ballLine)
         {
             foreach (Brick brick in BrickList.ToArray())
-            {
                 if (brick.BallIsHitting(ballLine))
                 {
                     BouncesBall(brick, ballLine);
                     brick.Durability--;
                     if (brick.Durability == 0)
                         BrickList.Remove(brick);
+                    hasBounced = true;
                     return;
                 }
+            if (gameboard.BallIsHitting(ballLine))
+            {
+                BouncesBall(gameboard, ballLine);
+                hasBounced = true;
+                return;
+            }
+            if (player.BallIsHitting(ballLine))
+            {
+                Ball.Direction = Ball.BouncePlayer(player.GetIntersectionLine(ballLine), ballLine, player);
+                hasBounced = true;
+                return;
             }
         }
-        public void PlayerGetsHit(Lines ballLine)
+        public void BouncesBall(GameObject gObject, Lines ballLine)
         {
-            if (player.IsHit(ballLine))
-                Ball.Direction = Ball.BouncePlayer(player.LineIsHit, ballLine, player);
-        }
-        public void WallsGetHit(Lines ballLine)
-        {
-            if (gameboard.BallHitsWall(Ball))
-                Ball.Direction.X *= -1;
-            else if (gameboard.BallHitsTop(Ball))
-                Ball.Direction.Y *= -1;
-        }
-        public void BouncesBall(Brick brick, Lines ballLine)
-        {
-            Vector2 intersection = brick.LineIsHit.LineSegmentIntersection(ballLine);
+            Lines lineHit = gObject.GetIntersectionLine(ballLine);
+            Vector2 intersection = lineHit.LineSegmentIntersection(ballLine);
             Lines distanceToIntersection = new Lines(ballLine.Start, intersection);
             float lengthAfterIntersection = ballLine.Getlength() - distanceToIntersection.Getlength();
-            Ball.Direction = Ball.BounceBrick(brick.LineIsHit, ballLine);
+            Ball.Direction = Ball.Bounce(lineHit, ballLine);
             Ball.Direction.Normalize();
             Ball.Direction *= lengthAfterIntersection;
-            Ball.Position +=  Ball.Direction;
+            Ball.Position += Ball.Direction;
             hasBounced = true;
         }
 

@@ -14,42 +14,53 @@ namespace Brickout
         public Vector2 Position;
         public Vector2 Size;
         public Vector2 Direction;
+        public Vector2 BallSize;
         public RawRectangleF Sprite;
         public float Speed;
-        public Lines Left;
-        public Lines Right;
-        public Lines Top;
-        public Lines Bottom;
-        public Lines LineIsHit;
+        private bool intersectLeft;
+        private bool intersectRight;
+        private bool intersectTop;
+        private bool intersectBottom;
+        private Vector2 topLeft => new Vector2(Position.X, Position.Y);
+        private Vector2 topRight => new Vector2(Position.X + Size.X + BallSize.X, Position.Y);
+        private Vector2 botLeft => new Vector2(Position.X, Position.Y + BallSize.Y + Size.Y);
+        private Vector2 botRight => new Vector2(Position.X + Size.X + BallSize.X, Position.Y + Size.Y + BallSize.Y);
 
+        public virtual Lines Left => new Lines(topLeft, botLeft);
+        public virtual Lines Right => new Lines(topRight, botRight);
+        public virtual Lines Top => new Lines(topLeft, topRight);
+        public virtual Lines Bottom => new Lines(botLeft, botRight);
 
         public GameObject(Vector2 position, Vector2 size, RawRectangleF sprite)
         {
             Position = position;
             Size = size;
             Sprite = sprite;
-           
+            BallSize = new Vector2(20, 20);
         }
+
         public bool BallIsHitting(Lines ballLine)
         {
             Vector2 nullVector = new Vector2(0, 0);
-
-            bool intersectLeft = (nullVector != Left.LineSegmentIntersection(ballLine));
-            bool intersectRight = (nullVector != Right.LineSegmentIntersection(ballLine));
-            bool intersectTop = (nullVector != Top.LineSegmentIntersection(ballLine));
-            bool intersectBottom = (nullVector != Bottom.LineSegmentIntersection(ballLine));
-
-
-            if (intersectLeft)
-                LineIsHit = Left;
-            if (intersectRight)
-                LineIsHit = Right;
-            if (intersectTop)
-                LineIsHit = Top;
-            if (intersectBottom)
-                LineIsHit = Bottom;
+            intersectLeft = (nullVector != Left.LineSegmentIntersection(ballLine));
+            intersectRight = (nullVector != Right.LineSegmentIntersection(ballLine));
+            intersectTop = (nullVector != Top.LineSegmentIntersection(ballLine));
+            intersectBottom = (nullVector != Bottom.LineSegmentIntersection(ballLine));
 
             return (intersectLeft || intersectRight || intersectTop || intersectBottom);
+        }
+        public Lines GetIntersectionLine(Lines ballLine)
+        {
+            Vector2 nullVector = new Vector2(0, 0);
+            if (nullVector != Left.LineSegmentIntersection(ballLine))
+                return Left;
+            if (nullVector != Right.LineSegmentIntersection(ballLine))
+                return Right;
+            if (nullVector != Top.LineSegmentIntersection(ballLine))
+                return Top;
+            if (nullVector != Bottom.LineSegmentIntersection(ballLine))
+                return Bottom;
+            throw new Exception("no Intersection");
         }
         public bool IncludesPoint(Vector2 position)
         {
@@ -61,8 +72,8 @@ namespace Brickout
             Vector2 positionPlusSize = new Vector2(gameObject.Position.X + gameObject.Size.X, gameObject.Position.Y + gameObject.Size.Y);
             return (IncludesPoint(gameObject.Position) && IncludesPoint(positionPlusSize));
         }
-       
-       
+
+
 
         //public bool Hits(GameObject gameObject)
         //{
