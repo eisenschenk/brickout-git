@@ -29,7 +29,7 @@ namespace Brickout
 
         public void FillList(int width, int height, List<Brick> brickList)
         {
-            Ball ball = new Ball(new Player(new Vector2()), 1);
+            Ball ball = new Ball();
             for (int outerIndex = 0; outerIndex < GameBoard.Length; outerIndex++)
                 for (int innerIndex = 0; innerIndex < GameBoard[outerIndex].Length; innerIndex++)
                 {

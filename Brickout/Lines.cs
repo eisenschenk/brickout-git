@@ -53,10 +53,7 @@ namespace Brickout
             y = LineIntersectionY(Start, End, line.Start, line.End);
             return (x != 0 && y != 0);
         }
-        public float LineLength(Lines line)
-        {
-            return ((float)Math.Sqrt((float)Math.Pow(line.Start.X - line.End.X, 2) + (float)Math.Pow(line.Start.Y - line.End.Y, 2)));
-        }
+        
 
         //http://www.cs.swan.ac.uk/~cssimon/line_intersection.html
         public Vector2 LineSegmentIntersection(Lines line)
@@ -76,14 +73,18 @@ namespace Brickout
 
             if (0 <= tA && tA <= 1 && 0 <= tB && tB <= 1)
             {
-                float y = Start.X + tA * (End.X - Start.X);
-                float x = Start.Y + tA * (End.Y - Start.Y);
+                float x = Start.X + tA * (End.X - Start.X);
+                float y = Start.Y + tA * (End.Y - Start.Y);
                 return (new Vector2(x, y));
             }
             else
                 return new Vector2(0, 0);
-
-
+        }
+        public float Getlength()
+        {
+            float x = Math.Abs(Start.X - End.X);
+            float y = Math.Abs(Start.Y - End.Y);
+           return (float)Math.Sqrt((float)Math.Pow(x, 2) + (float)Math.Pow(y, 2));
         }
 
 
