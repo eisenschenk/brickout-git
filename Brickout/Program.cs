@@ -15,6 +15,7 @@ using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 using Device = SharpDX.Direct3D11.Device;
 using Factory = SharpDX.DXGI.Factory;
 using D2DFactory = SharpDX.Direct2D1.Factory;
+using System.Threading;
 
 namespace Brickout
 {
@@ -63,6 +64,7 @@ namespace Brickout
 
                     game.Update((float)elapsed.TotalSeconds);
                     game.DrawScene(renderTarget);
+                    //Thread.Sleep(TimeSpan.FromSeconds(1));
                 });
             }
         }

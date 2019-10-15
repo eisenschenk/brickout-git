@@ -13,10 +13,21 @@ namespace Brickout
 
         public Ball() : base(new Vector2(600, 600), new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
         {
-            Speed = 200;
+            Speed = 50;
             Direction = new Vector2(10, -10);
         }
-        public Vector2 BRPoint => Position + Size;
+        public Vector2 BRPoint
+        {
+            get => Position + Size;
+            set => Position = value - Size;
+        }
+        public Vector2 Bounce(GameObject gObject, Lines line, Lines ballLine)
+        {
+            if (gObject is Player)
+                return BouncePlayer(line, ballLine);
+            else
+                return Bounce(line, ballLine);
+        }
         public Vector2 Bounce(Lines line, Lines ballLine)
         {
             var reflector = line.Vector;

@@ -47,18 +47,27 @@ namespace Brickout
 
             return (intersectLeft || intersectRight || intersectTop || intersectBottom);
         }
-        public Lines GetIntersectingLine(Lines ballLine, Ball ball)
+        public Lines GetIntersectingLine(Lines ballLine, Ball ball, List<GameObject> gObjectList)
         {
-            Vector2 nullVector = new Vector2(0, 0);
-            Lines line;
-            if (nullVector != (line = GetLeftBorder(ball)).LineSegmentIntersection(ballLine))
-                return line;
-            if (nullVector != (line = GetRightBorder(ball)).LineSegmentIntersection(ballLine))
-                return line;
-            if (nullVector != (line = GetTopBorder(ball)).LineSegmentIntersection(ballLine))
-                return line;
-            if (nullVector != (line = GetBottomBorder(ball)).LineSegmentIntersection(ballLine))
-                return line;
+            Vector2 Left = (GetLeftBorder(ball)).LineSegmentIntersection(ballLine);
+            Vector2 Right = (GetRightBorder(ball)).LineSegmentIntersection(ballLine);
+            Vector2 Top = (GetTopBorder(ball)).LineSegmentIntersection(ballLine);
+            Vector2 Bottom = (GetBottomBorder(ball)).LineSegmentIntersection(ballLine);
+
+            List<Vector2> lineList = new List<Vector2>();
+
+            foreach (GameObject gObject in gObjectList)
+            {
+                if (!Left.IsZero)
+                    lineList.Add(Left);
+                if (!Right.IsZero)
+                    lineList.Add(Right);
+                if (!Top.IsZero)
+                    lineList.Add(Top);
+                if (!Bottom.IsZero)
+                    lineList.Add(Bottom);
+            }
+
             return null;
         }
         public bool IncludesPoint(Vector2 position)
