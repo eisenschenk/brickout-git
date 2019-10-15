@@ -11,12 +11,11 @@ namespace Brickout
     {
         public Vector2 Start;
         public Vector2 End;
-        public Vector2 Vector;
+        public Vector2 Vector => new Vector2(End.X - Start.X, End.Y - Start.Y);
         public Lines(Vector2 start, Vector2 end)
         {
             Start = start;
             End = end;
-            Vector = new Vector2(End.X - Start.X, End.Y - Start.Y);
         }
         //calculation: http://www.cs.swan.ac.uk/~cssimon/line_intersection.html
         public Vector2 LineSegmentIntersection(Lines line)
@@ -46,7 +45,7 @@ namespace Brickout
         {
             float x = Math.Abs(Start.X - End.X);
             float y = Math.Abs(Start.Y - End.Y);
-           return (float)Math.Sqrt((float)Math.Pow(x, 2) + (float)Math.Pow(y, 2));
+            return (float)Math.Sqrt((float)Math.Pow(x, 2) + (float)Math.Pow(y, 2));
         }
 
 

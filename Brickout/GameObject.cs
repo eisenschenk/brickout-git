@@ -14,53 +14,52 @@ namespace Brickout
         public Vector2 Position;
         public Vector2 Size;
         public Vector2 Direction;
-        public Vector2 BallSize;
         public RawRectangleF Sprite;
         public float Speed;
         private bool intersectLeft;
         private bool intersectRight;
         private bool intersectTop;
         private bool intersectBottom;
-        private Vector2 topLeft => new Vector2(Position.X, Position.Y);
-        private Vector2 topRight => new Vector2(Position.X + Size.X + BallSize.X, Position.Y);
-        private Vector2 botLeft => new Vector2(Position.X, Position.Y + BallSize.Y + Size.Y);
-        private Vector2 botRight => new Vector2(Position.X + Size.X + BallSize.X, Position.Y + Size.Y + BallSize.Y);
+        private Vector2 topLeft(Ball ball) => new Vector2(Position.X, Position.Y);
+        private Vector2 topRight(Ball ball) => new Vector2(Position.X + Size.X + ball.Size.X, Position.Y);
+        private Vector2 botLeft(Ball ball) => new Vector2(Position.X, Position.Y + ball.Size.Y + Size.Y);
+        private Vector2 botRight(Ball ball) => new Vector2(Position.X + Size.X + ball.Size.X, Position.Y + Size.Y + ball.Size.Y);
 
-        public virtual Lines Left => new Lines(topLeft, botLeft);
-        public virtual Lines Right => new Lines(topRight, botRight);
-        public virtual Lines Top => new Lines(topLeft, topRight);
-        public virtual Lines Bottom => new Lines(botLeft, botRight);
+        public virtual Lines GetLeftBorder(Ball ball) => new Lines(topLeft(ball), botLeft(ball));
+        public virtual Lines GetRightBorder(Ball ball) => new Lines(topRight(ball), botRight(ball));
+        public virtual Lines GetTopBorder(Ball ball) => new Lines(topLeft(ball), topRight(ball));
+        public virtual Lines GetBottomBorder(Ball ball) => new Lines(botLeft(ball), botRight(ball));
 
         public GameObject(Vector2 position, Vector2 size, RawRectangleF sprite)
         {
             Position = position;
             Size = size;
             Sprite = sprite;
-            BallSize = new Vector2(20, 20);
         }
 
-        public bool BallIsHitting(Lines ballLine)
+        public bool BallIsHitting(Lines ballLine, Ball ball)
         {
             Vector2 nullVector = new Vector2(0, 0);
-            intersectLeft = (nullVector != Left.LineSegmentIntersection(ballLine));
-            intersectRight = (nullVector != Right.LineSegmentIntersection(ballLine));
-            intersectTop = (nullVector != Top.LineSegmentIntersection(ballLine));
-            intersectBottom = (nullVector != Bottom.LineSegmentIntersection(ballLine));
+            intersectLeft = (nullVector != GetLeftBorder(ball).LineSegmentIntersection(ballLine));
+            intersectRight = (nullVector != GetRightBorder(ball).LineSegmentIntersection(ballLine));
+            intersectTop = (nullVector != GetTopBorder(ball).LineSegmentIntersection(ballLine));
+            intersectBottom = (nullVector != GetBottomBorder(ball).LineSegmentIntersection(ballLine));
 
             return (intersectLeft || intersectRight || intersectTop || intersectBottom);
         }
-        public Lines GetIntersectionLine(Lines ballLine)
+        public Lines GetIntersectingLine(Lines ballLine, Ball ball)
         {
             Vector2 nullVector = new Vector2(0, 0);
-            if (nullVector != Left.LineSegmentIntersection(ballLine))
-                return Left;
-            if (nullVector != Right.LineSegmentIntersection(ballLine))
-                return Right;
-            if (nullVector != Top.LineSegmentIntersection(ballLine))
-                return Top;
-            if (nullVector != Bottom.LineSegmentIntersection(ballLine))
-                return Bottom;
-            throw new Exception("no Intersection");
+            Lines line;
+            if (nullVector != (line = GetLeftBorder(ball)).LineSegmentIntersection(ballLine))
+                return line;
+            if (nullVector != (line = GetRightBorder(ball)).LineSegmentIntersection(ballLine))
+                return line;
+            if (nullVector != (line = GetTopBorder(ball)).LineSegmentIntersection(ballLine))
+                return line;
+            if (nullVector != (line = GetBottomBorder(ball)).LineSegmentIntersection(ballLine))
+                return line;
+            return null;
         }
         public bool IncludesPoint(Vector2 position)
         {

@@ -15,14 +15,13 @@ namespace Brickout
         List<Brick> BrickList = new List<Brick>();
         public Player player;
         public Ball Ball;
-        public Gameboard gameboard;
+        public Gameboard Gameboard;
         public Vector2 BallSize = new Vector2(20, 20);
         public float Elapsed;
         public float BallDistance;
         public int Width;
         public int Height;
-        public bool hasBounced = default;
-        bool ballExists = default;
+        bool BallExists;
         DirectInput DirectInput;
         Keyboard Keyboard;
         Bitmap Tileset;
@@ -32,7 +31,7 @@ namespace Brickout
         public Game(int width, int height, string level)
         {
             player = new Player(new Vector2(width / 2f, height - 55));
-            gameboard = new Gameboard(width, height, level, BrickList);
+            Gameboard = new Gameboard(width, height, level, BrickList);
             Width = width;
             Height = height;
         }
@@ -56,7 +55,7 @@ namespace Brickout
                     1, BitmapInterpolationMode.Linear, brick.Sprite);
             render.DrawBitmap(Tileset, new RectangleF(player.Position.X, player.Position.Y, player.Size.X, player.Size.Y),
                 1, BitmapInterpolationMode.Linear, player.Sprite);
-            if (!ballExists)
+            if (!BallExists)
                 Ball = CreateBall();
             render.DrawBitmap(Tileset, new RectangleF(Ball.Position.X, Ball.Position.Y, Ball.Size.X, Ball.Size.Y),
                 1, BitmapInterpolationMode.Linear, Ball.Sprite);
@@ -68,75 +67,71 @@ namespace Brickout
             Elapsed = elapsed;
             KeyboardState keyboard = Keyboard.GetCurrentState();
 
-            if (keyboard.IsPressed(Key.Left) && player.IsValidMovementLeft(player, gameboard))
+            if (keyboard.IsPressed(Key.Left) && player.IsValidMovementLeft(player, Gameboard))
                 player.Position.X += -player.Speed;
-            if (keyboard.IsPressed(Key.Right) && player.IsValidMovementRight(player, gameboard))
+            if (keyboard.IsPressed(Key.Right) && player.IsValidMovementRight(player, Gameboard))
                 player.Position.X += player.Speed;
 
-            if (ballExists)
+            if (BallExists)
                 MoveBall();
         }
         //ToDo
-        public void GameOver()
+        private void GameOver()
         {
 
         }
 
-        public void MoveBall()
+        private void MoveBall()
         {
             BounceAndMove();
             if (Ball.Position.Y > Height)
             {
-                ballExists = false;
+                BallExists = false;
                 player.Life--;
                 if (player.Life <= 0)
                     GameOver();
             }
         }
-        public void BounceAndMove()
+        private void BounceAndMove()
         {
             BallDistance = Elapsed * Ball.Speed;
             Ball.Direction.Normalize();
             Vector2 newBallPosition = Ball.BRPoint + Ball.Direction * BallDistance;
             Lines ballLine = new Lines(Ball.BRPoint, newBallPosition);
 
-            GameobjectGotHit(ballLine);
-            if (!hasBounced)
+            if (!BounceAndMove(ballLine))
             {
                 Ball.Direction.Normalize();
                 Ball.Position += Ball.Direction * BallDistance;
             }
-            hasBounced = false;
         }
 
-        public void GameobjectGotHit(Lines ballLine)
+        private bool BounceAndMove(Lines ballLine)
         {
             foreach (Brick brick in BrickList.ToArray())
-                if (brick.BallIsHitting(ballLine))
+                if (brick.BallIsHitting(ballLine, Ball))
                 {
                     BouncesBall(brick, ballLine);
                     brick.Durability--;
                     if (brick.Durability == 0)
                         BrickList.Remove(brick);
-                    hasBounced = true;
-                    return;
+                    return true;
                 }
-            if (gameboard.BallIsHitting(ballLine))
+            if (Gameboard.BallIsHitting(ballLine, Ball))
             {
-                BouncesBall(gameboard, ballLine);
-                hasBounced = true;
-                return;
+                BouncesBall(Gameboard, ballLine);
+                return true;
             }
-            if (player.BallIsHitting(ballLine))
+            if (player.BallIsHitting(ballLine, Ball))
             {
-                Ball.Direction = Ball.BouncePlayer(player.GetIntersectionLine(ballLine), ballLine, player);
-                hasBounced = true;
-                return;
+                Ball.Direction = Ball.BouncePlayer(player.GetIntersectingLine(ballLine, Ball), ballLine);
+                return true;
             }
+            return false;
         }
-        public void BouncesBall(GameObject gObject, Lines ballLine)
+        private void BouncesBall(GameObject gObject, Lines ballLine)
         {
-            Lines lineHit = gObject.GetIntersectionLine(ballLine);
+            Lines lineHit = gObject.GetIntersectingLine(ballLine, Ball);
             Vector2 intersection = lineHit.LineSegmentIntersection(ballLine);
             Lines distanceToIntersection = new Lines(ballLine.Start, intersection);
             float lengthAfterIntersection = ballLine.Getlength() - distanceToIntersection.Getlength();
@@ -144,14 +139,13 @@ namespace Brickout
             Ball.Direction.Normalize();
             Ball.Direction *= lengthAfterIntersection;
             Ball.Position += Ball.Direction;
-            hasBounced = true;
         }
 
 
 
-        public Ball CreateBall()
+        private Ball CreateBall()
         {
-            ballExists = true;
+            BallExists = true;
             return new Ball();
         }
         public void Dispose()

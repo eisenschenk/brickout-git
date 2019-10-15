@@ -18,10 +18,10 @@ namespace Brickout
         public int Height;
         public int[][] GameBoard;
 
-        public override Lines Left => new Lines(new Vector2(BallSize.X, BallSize.Y), new Vector2(BallSize.X, Height));
-        public override Lines Top => new Lines(new Vector2(BallSize.X, BallSize.Y), new Vector2(Width - BallSize.X, BallSize.Y));
-        public override Lines Right => new Lines(new Vector2(Width, BallSize.Y), new Vector2(Width, Height));
-        public override Lines Bottom => new Lines(new Vector2(0, Height + BallSize.Y*5), new Vector2(Width, Height + BallSize.Y*5));
+        public override Lines GetLeftBorder(Ball ball) => new Lines(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(ball.Size.X, Height));
+        public override Lines GetTopBorder(Ball ball) => new Lines(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(Width - ball.Size.X, ball.Size.Y));
+        public override Lines GetRightBorder(Ball ball) => new Lines(new Vector2(Width, ball.Size.Y), new Vector2(Width, Height));
+//public override Lines Bottom => new Lines(new Vector2(0, Height + BallSize.Y*5), new Vector2(Width, Height + BallSize.Y*5));
         public Gameboard(int width, int height, string level, List<Brick> brickList)
             : base(new Vector2(0, 0), new Vector2(width, height), new RawRectangleF())
         {
