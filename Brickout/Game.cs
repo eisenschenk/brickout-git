@@ -13,7 +13,6 @@ namespace Brickout
     class Game : IDisposable
     {
         List<GameObject> GobjectList = new List<GameObject>();
-        List<GameObject> IsHitList = new List<GameObject>();
         public Player player;
         public Ball Ball;
         public Gameboard Gameboard;
@@ -104,7 +103,7 @@ namespace Brickout
             BallDistance = Elapsed * Ball.Speed;
             Ball.Direction.Normalize();
             Vector2 newBallPosition = Ball.BRPoint + Ball.Direction * BallDistance;
-            Lines ballLine = new Lines(Ball.BRPoint, newBallPosition);
+            Line ballLine = new Line(Ball.BRPoint, newBallPosition);
 
             if (!BounceAndMove(ballLine))
             {
@@ -113,10 +112,10 @@ namespace Brickout
             }
         }
 
-        private bool BounceAndMove(Lines ballLine)
+        private bool BounceAndMove(Line ballLine)
         {
             bool isHit = default;
-            List<Intersection> intersectionList = new List<Intersection>();
+            List<GameObject> IsHitList = new List<GameObject>();
             Intersection intersection = default;
             foreach (GameObject gObject in GobjectList.ToArray())
                 if (gObject.BallIsHitting(ballLine, Ball))
@@ -126,25 +125,25 @@ namespace Brickout
                 }
             if (isHit)
             {
-                intersection = IsHitList[0].GetIntersection(ballLine, Ball, IsHitList, intersectionList, IsHitList);
-                BouncesBall(intersection, ballLine);
+                intersection = GameObject.GetIntersection(ballLine, Ball, IsHitList, IsHitList);
+                GameObject[] isHitArray = IsHitList.ToArray();
+                IsHitList.Clear();
+                BouncesBall(intersection, ballLine, isHitArray);
             }
 
             return isHit;
         }
-        private void BouncesBall(Intersection intersection, Lines ballLine)
+        private void BouncesBall(Intersection intersection, Line ballLine, GameObject[] isHitArray)
         {
             Ball.Direction = Ball.Bounce(intersection, ballLine);
             Ball.Direction.Normalize();
             Ball.Direction *= intersection.LengthAfterIntersection;
             Ball.BRPoint = intersection.IntersectionPoint + Ball.Direction;
-            foreach (GameObject gObject in IsHitList)
+            foreach (GameObject gObject in isHitArray)
                 GobjectList.Remove(gObject);
-            Lines newBallLine = new Lines(intersection.IntersectionPoint, intersection.IntersectionPoint + Ball.Direction);
-            if (!BounceAndMove(newBallLine))
-            {
-            }
-            foreach (GameObject gObject in IsHitList)
+            Line newBallLine = new Line(intersection.IntersectionPoint, intersection.IntersectionPoint + Ball.Direction);
+            BounceAndMove(newBallLine);
+            foreach (GameObject gObject in isHitArray)
             {
                 GobjectList.Add(gObject);
                 if (gObject is Brick)
@@ -155,7 +154,6 @@ namespace Brickout
                         GobjectList.Remove(gObject);
                 }
             }
-            IsHitList.Clear();
 
 
         }

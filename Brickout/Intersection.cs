@@ -10,15 +10,15 @@ namespace Brickout
     class Intersection
     {
         public Vector2 IntersectionPoint;
-        public Lines BallLine;
-        public Lines IntersectionLine;
+        public Line BallLine;
+        public Line IntersectionLine;
         public int IndexGObject;
         public float DistanceToIntersection;
         public float LengthAfterIntersection;
         public float IntersectionLength;
         public GameObject IntersectingObject;
 
-        public Intersection(GameObject gObject, Lines intersectionLine, Lines ballLine, int index)
+        public Intersection(GameObject gObject, Line intersectionLine, Line ballLine, int index)
         {
             IntersectionLine = intersectionLine;
             BallLine = ballLine;
@@ -26,7 +26,7 @@ namespace Brickout
             IndexGObject = index;
             IntersectionLength = intersectionLine.Getlength();
             IntersectingObject = gObject;
-            DistanceToIntersection = new Lines(ballLine.Start, IntersectionPoint).Getlength();
+            DistanceToIntersection = new Line(ballLine.Start, IntersectionPoint).Getlength();
             LengthAfterIntersection = ballLine.Getlength() - DistanceToIntersection;
         }
 

@@ -73,7 +73,7 @@
     <Compile Include="Gameboard.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Intersection.cs" />
-    <Compile Include="Lines.cs" />
+    <Compile Include="Line.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Game.cs" />

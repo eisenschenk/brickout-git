@@ -64,7 +64,7 @@ namespace Brickout
 
                     game.Update((float)elapsed.TotalSeconds);
                     game.DrawScene(renderTarget);
-                    //Thread.Sleep(TimeSpan.FromSeconds(1));
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
                 });
             }
         }
