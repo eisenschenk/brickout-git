@@ -72,6 +72,7 @@
     <Compile Include="Brick.cs" />
     <Compile Include="Gameboard.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="Intersection.cs" />
     <Compile Include="Lines.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Resources.cs" />

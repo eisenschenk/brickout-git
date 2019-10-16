@@ -13,7 +13,7 @@ namespace Brickout
 
         public Ball() : base(new Vector2(600, 600), new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
         {
-            Speed = 50;
+            Speed = 200;
             Direction = new Vector2(10, -10);
         }
         public Vector2 BRPoint
@@ -21,12 +21,12 @@ namespace Brickout
             get => Position + Size;
             set => Position = value - Size;
         }
-        public Vector2 Bounce(GameObject gObject, Lines line, Lines ballLine)
+        public Vector2 Bounce(Intersection intersection, Lines ballLine)
         {
-            if (gObject is Player)
-                return BouncePlayer(line, ballLine);
+            if (intersection.IntersectingObject is Player)
+                return BouncePlayer(intersection.IntersectionLine, ballLine);
             else
-                return Bounce(line, ballLine);
+                return Bounce(intersection.IntersectionLine, ballLine);
         }
         public Vector2 Bounce(Lines line, Lines ballLine)
         {

@@ -47,25 +47,40 @@ namespace Brickout
 
             return (intersectLeft || intersectRight || intersectTop || intersectBottom);
         }
-        public Lines GetIntersectingLine(Lines ballLine, Ball ball, List<GameObject> gObjectList)
+        public Intersection GetIntersection(Lines ballLine, Ball ball, List<GameObject> gObjectList, List<Intersection> intersectionList, List<GameObject> isHitList)
         {
-            Vector2 Left = (GetLeftBorder(ball)).LineSegmentIntersection(ballLine);
-            Vector2 Right = (GetRightBorder(ball)).LineSegmentIntersection(ballLine);
-            Vector2 Top = (GetTopBorder(ball)).LineSegmentIntersection(ballLine);
-            Vector2 Bottom = (GetBottomBorder(ball)).LineSegmentIntersection(ballLine);
+            Intersection closestIntersection = default;
 
-            List<Vector2> lineList = new List<Vector2>();
+            float shortestDistance = 0;
 
             foreach (GameObject gObject in gObjectList)
             {
+                Vector2 Left = (gObject.GetLeftBorder(ball)).LineSegmentIntersection(ballLine);
+                Vector2 Right = (gObject.GetRightBorder(ball)).LineSegmentIntersection(ballLine);
+                Vector2 Top = (gObject.GetTopBorder(ball)).LineSegmentIntersection(ballLine);
+                Vector2 Bottom = (gObject.GetBottomBorder(ball)).LineSegmentIntersection(ballLine);
+
                 if (!Left.IsZero)
-                    lineList.Add(Left);
+                    intersectionList.Add(new Intersection(gObject, gObject.GetLeftBorder(ball), ballLine, gObjectList.IndexOf(gObject)));
                 if (!Right.IsZero)
-                    lineList.Add(Right);
+                    intersectionList.Add(new Intersection(gObject, gObject.GetRightBorder(ball), ballLine, gObjectList.IndexOf(gObject)));
                 if (!Top.IsZero)
-                    lineList.Add(Top);
+                    intersectionList.Add(new Intersection(gObject, gObject.GetTopBorder(ball), ballLine, gObjectList.IndexOf(gObject)));
                 if (!Bottom.IsZero)
-                    lineList.Add(Bottom);
+                    intersectionList.Add(new Intersection(gObject, gObject.GetBottomBorder(ball), ballLine, gObjectList.IndexOf(gObject)));
+            }
+            foreach (Intersection intersection in intersectionList)
+            {
+                if (shortestDistance == 0 || shortestDistance >= intersection.IntersectionLength)
+                {
+                    shortestDistance = intersection.DistanceToIntersection;
+                    closestIntersection = intersection;
+                }
+            }
+            if (intersectionList.Count > 0)
+            {
+                intersectionList.Clear();
+                return closestIntersection;
             }
 
             return null;
