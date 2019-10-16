@@ -19,9 +19,9 @@ namespace Brickout
         public int[][] GameBoard;
 
         public override Line GetLeftBorder(Ball ball) => new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(ball.Size.X, Height));
-        public override Line GetTopBorder(Ball ball) => new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(Width - ball.Size.X, ball.Size.Y));
+        public override Line GetTopBorder(Ball ball) => new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(Width, ball.Size.Y));
         public override Line GetRightBorder(Ball ball) => new Line(new Vector2(Width, ball.Size.Y), new Vector2(Width, Height));
-//public override Lines Bottom => new Lines(new Vector2(0, Height + BallSize.Y*5), new Vector2(Width, Height + BallSize.Y*5));
+        public override Line GetBottomBorder(Ball ball) => new Line(new Vector2(ball.Size.X, Height), new Vector2(Width, Height));
         public Gameboard(int width, int height, string level, List<GameObject> gObList)
             : base(new Vector2(0, 0), new Vector2(width, height), new RawRectangleF())
         {

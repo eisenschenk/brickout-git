@@ -90,6 +90,11 @@ namespace Brickout
         private void MoveBall()
         {
             BounceAndMove();
+            Lifelost();
+        }
+        private void Lifelost()
+        {
+
             if (Ball.Position.Y > Height)
             {
                 BallExists = false;
@@ -135,14 +140,19 @@ namespace Brickout
         }
         private void BouncesBall(Intersection intersection, Line ballLine, GameObject[] isHitArray)
         {
-            Ball.Direction = Ball.Bounce(intersection, ballLine);
+            Ball.Direction = Ball.Bounce(intersection, ballLine, Gameboard);
+            if (Ball.Direction.IsZero)
+                return;
             Ball.Direction.Normalize();
             Ball.Direction *= intersection.LengthAfterIntersection;
             Ball.BRPoint = intersection.IntersectionPoint + Ball.Direction;
             foreach (GameObject gObject in isHitArray)
                 GobjectList.Remove(gObject);
             Line newBallLine = new Line(intersection.IntersectionPoint, intersection.IntersectionPoint + Ball.Direction);
-            BounceAndMove(newBallLine);
+            if (newBallLine.Start != newBallLine.End)
+                BounceAndMove(newBallLine);
+
+
             foreach (GameObject gObject in isHitArray)
             {
                 GobjectList.Add(gObject);
