@@ -17,28 +17,32 @@ namespace Brickout
         public int Width;
         public int Height;
         public int[][] GameBoard;
+        public int MarginTop;
 
-        public override Line GetLeftBorder(Ball ball) => new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(ball.Size.X, Height));
+        public override Line GetLeftBorder(Ball ball) => new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(ball.Size.X, Height + ball.Size.Y));
         public override Line GetTopBorder(Ball ball) => new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(Width, ball.Size.Y));
-        public override Line GetRightBorder(Ball ball) => new Line(new Vector2(Width, ball.Size.Y), new Vector2(Width, Height));
-        public override Line GetBottomBorder(Ball ball) => new Line(new Vector2(ball.Size.X, Height), new Vector2(Width, Height));
+        public override Line GetRightBorder(Ball ball) => new Line(new Vector2(Width, ball.Size.Y), new Vector2(Width, Height + ball.Size.Y));
+        public override Line GetBottomBorder(Ball ball) => new Line(new Vector2(ball.Size.X, Height + ball.Size.Y), new Vector2(Width, Height + ball.Size.Y));
         public Gameboard(int width, int height, string level, List<GameObject> gObList)
             : base(new Vector2(0, 0), new Vector2(width, height), new RawRectangleF())
         {
             Width = width;
             Height = height;
             GameBoard = JsonConvert.DeserializeObject<int[][]>(File.ReadAllText(level));
+            MarginTop = 30;
             FillList(width, height, gObList);
         }
         public void FillList(int width, int height, List<GameObject> gObList)
         {
-            Ball ball = new Ball();
+            Player player = new Player(new Vector2(0, 0));
+            Ball ball = new Ball(player);
+            //schleife für gleichmäßige verteilung der bricks
             for (int outerIndex = 0; outerIndex < GameBoard.Length; outerIndex++)
                 for (int innerIndex = 0; innerIndex < GameBoard[outerIndex].Length; innerIndex++)
                 {
                     int brickX = width / GameBoard[outerIndex].Length * innerIndex + 1;
                     int brickY = height / 2 / GameBoard.Length * outerIndex + 1;
-                    gObList.Add(new Brick(new Vector2(brickX, brickY), GameBoard[outerIndex][innerIndex], ball));
+                    gObList.Add(new Brick(new Vector2(brickX, brickY + MarginTop), GameBoard[outerIndex][innerIndex], ball));
                 }
         }
     }

@@ -13,9 +13,10 @@ namespace Brickout
     class Game : IDisposable
     {
         List<GameObject> GobjectList = new List<GameObject>();
-        public Player player;
+        public Player Player;
         public Ball Ball;
         public Gameboard Gameboard;
+        public Textoutput Score = new Textoutput("Score: ", new Vector2(2, 2));
         public Vector2 BallSize = new Vector2(20, 20);
         public float Elapsed;
         public float BallDistance;
@@ -30,8 +31,10 @@ namespace Brickout
 
         public Game(int width, int height, string level)
         {
-            player = new Player(new Vector2(width / 2f, height - 55));
-            GobjectList.Add(player);
+            Player = new Player(new Vector2(width / 2f, height - 55));
+            GobjectList.Add(Player);
+            Ball = CreateBall();
+            GobjectList.Add(Ball);
             Gameboard = new Gameboard(width, height, level, GobjectList);
             GobjectList.Add(Gameboard);
             Width = width;
@@ -52,19 +55,11 @@ namespace Brickout
         {
             render.BeginDraw();
             render.Clear(BackgroundColor);
-            foreach (GameObject gObject in GobjectList)
-                if (gObject is Brick)
-                {
-                    Brick brick = (Brick)gObject;
-                    render.DrawBitmap(Tileset, new RectangleF(brick.Position.X, brick.Position.Y, brick.Size.X, brick.Size.Y),
-                        1, BitmapInterpolationMode.Linear, brick.Sprite);
-                }
-            render.DrawBitmap(Tileset, new RectangleF(player.Position.X, player.Position.Y, player.Size.X, player.Size.Y),
-                1, BitmapInterpolationMode.Linear, player.Sprite);
-            if (!BallExists)
-                Ball = CreateBall();
-            render.DrawBitmap(Tileset, new RectangleF(Ball.Position.X, Ball.Position.Y, Ball.Size.X, Ball.Size.Y),
-                1, BitmapInterpolationMode.Linear, Ball.Sprite);
+            GobjectList.ForEach(r => render.DrawBitmap(Tileset, new RectangleF(r.Position.X, r.Position.Y, r.Size.X, r.Size.Y),
+                    1, BitmapInterpolationMode.Linear, r.Sprite));
+            foreach (TextCharacter character in Score.Output)
+                render.DrawBitmap(Tileset, new RectangleF(character.Position.X, character.Position.Y, character.Size.X, character.Size.Y),
+                    1, BitmapInterpolationMode.Linear, character.Sprite);
             render.EndDraw();
         }
 
@@ -73,13 +68,16 @@ namespace Brickout
             Elapsed = elapsed;
             KeyboardState keyboard = Keyboard.GetCurrentState();
 
-            if (keyboard.IsPressed(Key.Left) && player.IsValidMovementLeft(player, Gameboard))
-                player.Position.X += -player.Speed;
-            if (keyboard.IsPressed(Key.Right) && player.IsValidMovementRight(player, Gameboard))
-                player.Position.X += player.Speed;
+            if (keyboard.IsPressed(Key.Left) && Player.IsValidMovementLeft(Player, Gameboard))
+                Player.Position.X += -Player.Speed;
+            if (keyboard.IsPressed(Key.Right) && Player.IsValidMovementRight(Player, Gameboard))
+                Player.Position.X += Player.Speed;
+            if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero && Player.Life >= 0)
+                Ball.Direction = new Vector2(0, -1);
 
-            if (BallExists)
-                MoveBall();
+
+            //if (BallExists)
+            MoveBall();
         }
         //ToDo
         private void GameOver()
@@ -89,17 +87,19 @@ namespace Brickout
 
         private void MoveBall()
         {
+            Lifelost(Ball.BRPoint);
             BounceAndMove();
-            Lifelost();
         }
-        private void Lifelost()
+        private void Lifelost(Vector2 brPoint)
         {
 
-            if (Ball.Position.Y > Height)
+            if (brPoint.Y >= Height)
             {
-                BallExists = false;
-                player.Life--;
-                if (player.Life <= 0)
+                // BallExists = false;
+                Player.Life--;
+                Ball.BRPoint = new Vector2(Player.Position.X + Player.Size.X / 2, Player.Position.Y - Ball.Size.Y - 5);
+                Ball.Direction = new Vector2(0, 0);
+                if (Player.Life <= 0)
                     GameOver();
             }
         }
@@ -120,19 +120,18 @@ namespace Brickout
         private bool BounceAndMove(Line ballLine)
         {
             bool isHit = default;
-            List<GameObject> IsHitList = new List<GameObject>();
+            List<GameObject> isHitList = new List<GameObject>();
             Intersection intersection = default;
-            foreach (GameObject gObject in GobjectList.ToArray())
-                if (gObject.BallIsHitting(ballLine, Ball))
-                {
-                    isHit = true;
-                    IsHitList.Add(gObject);
-                }
-            if (isHit)
+
+            isHitList = GobjectList
+                 .Where(g => g.BallIsHitting(ballLine, Ball))
+                 .ToList();
+
+            if (isHitList.Any())
             {
-                intersection = GameObject.GetIntersection(ballLine, Ball, IsHitList, IsHitList);
-                GameObject[] isHitArray = IsHitList.ToArray();
-                IsHitList.Clear();
+                intersection = GameObject.GetIntersection(ballLine, Ball, isHitList, isHitList);
+                GameObject[] isHitArray = isHitList.ToArray();
+                isHitList.Clear();
                 BouncesBall(intersection, ballLine, isHitArray);
             }
 
@@ -141,39 +140,39 @@ namespace Brickout
         private void BouncesBall(Intersection intersection, Line ballLine, GameObject[] isHitArray)
         {
             Ball.Direction = Ball.Bounce(intersection, ballLine, Gameboard);
-            if (Ball.Direction.IsZero)
-                return;
             Ball.Direction.Normalize();
             Ball.Direction *= intersection.LengthAfterIntersection;
             Ball.BRPoint = intersection.IntersectionPoint + Ball.Direction;
-            foreach (GameObject gObject in isHitArray)
-                GobjectList.Remove(gObject);
+            Lifelost(intersection.IntersectionPoint);
             Line newBallLine = new Line(intersection.IntersectionPoint, intersection.IntersectionPoint + Ball.Direction);
+            //isHitArray.ToList().ForEach(g => GobjectList.Remove(g));
+            GobjectList = GobjectList.Except(isHitArray).ToList();
             if (newBallLine.Start != newBallLine.End)
                 BounceAndMove(newBallLine);
-
-
             foreach (GameObject gObject in isHitArray)
             {
                 GobjectList.Add(gObject);
-                if (gObject is Brick)
+                ReduceDurability(gObject);
+            }
+        }
+        public void ReduceDurability(GameObject gObject)
+        {
+            if (gObject is Brick)
+            {
+                Brick brick = (Brick)gObject;
+                brick.Durability--;
+                if (brick.Durability <= 0)
                 {
-                    Brick brick = (Brick)gObject;
-                    brick.Durability--;
-                    if (brick.Durability <= 0)
-                        GobjectList.Remove(gObject);
+                    GobjectList.Remove(gObject);
+                    Score.Number++;
                 }
             }
-
-
         }
-
-
 
         private Ball CreateBall()
         {
             BallExists = true;
-            return new Ball();
+            return new Ball(Player);
         }
         public void Dispose()
         {
