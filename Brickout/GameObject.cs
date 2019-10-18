@@ -20,15 +20,15 @@ namespace Brickout
         private bool intersectRight;
         private bool intersectTop;
         private bool intersectBottom;
-        private Vector2 topLeft(Ball ball) => new Vector2(Position.X, Position.Y);
-        private Vector2 topRight(Ball ball) => new Vector2(Position.X + Size.X + ball.Size.X, Position.Y);
-        private Vector2 botLeft(Ball ball) => new Vector2(Position.X, Position.Y + ball.Size.Y + Size.Y);
-        private Vector2 botRight(Ball ball) => new Vector2(Position.X + Size.X + ball.Size.X, Position.Y + Size.Y + ball.Size.Y);
+        private Vector2 topLeft(GameObject ball) => new Vector2(Position.X, Position.Y);
+        private Vector2 topRight(GameObject ball) => new Vector2(Position.X + Size.X + ball.Size.X, Position.Y);
+        private Vector2 botLeft(GameObject ball) => new Vector2(Position.X, Position.Y + ball.Size.Y + Size.Y);
+        private Vector2 botRight(GameObject ball) => new Vector2(Position.X + Size.X + ball.Size.X, Position.Y + Size.Y + ball.Size.Y);
 
-        public virtual Line GetLeftBorder(Ball ball) => new Line(topLeft(ball), botLeft(ball));
-        public virtual Line GetRightBorder(Ball ball) => new Line(topRight(ball), botRight(ball));
-        public virtual Line GetTopBorder(Ball ball) => new Line(topLeft(ball), topRight(ball));
-        public virtual Line GetBottomBorder(Ball ball) => new Line(botLeft(ball), botRight(ball));
+        public virtual Line GetLeftBorder(GameObject ball) => new Line(topLeft(ball), botLeft(ball));
+        public virtual Line GetRightBorder(GameObject ball) => new Line(topRight(ball), botRight(ball));
+        public virtual Line GetTopBorder(GameObject ball) => new Line(topLeft(ball), topRight(ball));
+        public virtual Line GetBottomBorder(GameObject ball) => new Line(botLeft(ball), botRight(ball));
 
         public GameObject(Vector2 position, Vector2 size, RawRectangleF sprite)
         {
@@ -37,7 +37,7 @@ namespace Brickout
             Sprite = sprite;
         }
 
-        public bool BallIsHitting(Line ballLine, Ball ball)
+        public bool ObjectIsHitting(Line ballLine, GameObject ball)
         {
             Vector2 nullVector = new Vector2(0, 0);
             intersectLeft = (nullVector != GetLeftBorder(ball).LineSegmentIntersection(ballLine));
@@ -47,7 +47,7 @@ namespace Brickout
 
             return (intersectLeft || intersectRight || intersectTop || intersectBottom);
         }
-        public static Intersection GetIntersection(Line ballLine, Ball ball, List<GameObject> gObjectList, List<GameObject> isHitList)
+        public static Intersection GetIntersection(Line ballLine, GameObject ball, List<GameObject> gObjectList, List<GameObject> isHitList)
         {
             List<Intersection> intersectionList = new List<Intersection>();
             void AddBorderToList(Line line, GameObject gObject)

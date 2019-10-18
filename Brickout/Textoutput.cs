@@ -13,7 +13,7 @@ namespace Brickout
         public int Number;
         public Vector2 Position;
 
-        public List<TextCharacter> Output => GetOutput(Text + Number.ToString());
+        public TextCharacter[] Output => GetOutput(Text + Number.ToString());
 
 
 
@@ -23,19 +23,9 @@ namespace Brickout
             Position = position;
         }
 
-        public List<TextCharacter> GetOutput(string text)
+        public TextCharacter[] GetOutput(string text)
         {
-            List<TextCharacter> list = new List<TextCharacter>();
-            int index = 0;
-            foreach (char character in text.ToUpper())
-            {
-                index++;
-                list.Add(new TextCharacter(character, index, Position));
-            }
-            return list;
+            return text.ToUpper().Select((t, index) =>  new TextCharacter(t, index, Position)).ToArray();
         }
-
-
-
     }
 }

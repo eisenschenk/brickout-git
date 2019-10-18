@@ -75,6 +75,7 @@
     <Compile Include="Intersection.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="Powerup.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Program.cs" />

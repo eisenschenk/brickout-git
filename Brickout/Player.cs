@@ -19,11 +19,13 @@ namespace Brickout
         public bool IsValidMovementLeft(Player player, Gameboard gameboard)
         {
             Player playerL = new Player(new Vector2(player.Position.X - 1, player.Position.Y));
+            playerL.Size = player.Size;
             return (gameboard.IncludesGameObject(playerL));
         }
         public bool IsValidMovementRight(Player player, Gameboard gameboard)
         {
             Player playerR = new Player(new Vector2(player.Position.X + 1, player.Position.Y));
+            playerR.Size = player.Size;
             return (gameboard.IncludesGameObject(playerR));
         }
     }

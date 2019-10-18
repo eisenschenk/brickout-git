@@ -13,10 +13,12 @@ namespace Brickout
     class Game : IDisposable
     {
         List<GameObject> GobjectList = new List<GameObject>();
+        List<Powerup> PowerupList = new List<Powerup>();
         public Player Player;
         public Ball Ball;
         public Gameboard Gameboard;
         public Textoutput Score = new Textoutput("Score: ", new Vector2(2, 2));
+        public Random Random = new Random();
         public Vector2 BallSize = new Vector2(20, 20);
         public float Elapsed;
         public float BallDistance;
@@ -30,7 +32,7 @@ namespace Brickout
 
         public Game(int width, int height, string level)
         {
-            Player = new Player(new Vector2(width / 2f, height - 55));
+            Player = CreatePlayer();
             GobjectList.Add(Player);
             Ball = CreateBall();
             GobjectList.Add(Ball);
@@ -74,35 +76,57 @@ namespace Brickout
             if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero && Player.Life >= 0)
                 Ball.Direction = new Vector2(0, -1);
 
-
-            //if (BallExists)
-            MoveBall();
+            MoveGameObjetcs();
         }
         //ToDo
         private void GameOver()
         {
 
         }
+        private void MovePowerup()
+        {
+            foreach (Powerup pU in PowerupList.ToArray())
+            {
+                pU.Direction.Normalize();
+                Vector2 newPuPosition = pU.BRPoint + pU.Direction * Elapsed * pU.Speed;
+                Line pULine = new Line(pU.BRPoint, newPuPosition);
+                List<GameObject> isHitList = new List<GameObject>();
+                isHitList = GobjectList
+                               .Where(g => g is Player)
+                                .Where(g => g.ObjectIsHitting(pULine, pU))
+                                .ToList();
+                if (isHitList.Any())
+                {
+                    pU.UsePowerup(Player, Ball);
+                    PowerupList.Remove(pU);
+                    GobjectList.Remove(pU);
+                    isHitList.Clear();
+                }
+                pU.Position += pU.Direction * Elapsed * pU.Speed;
+            }
 
-        private void MoveBall()
+        }
+        private void MoveGameObjetcs()
         {
             Lifelost(Ball.BRPoint);
-            BounceAndMove();
+            MovePowerup();
+            BounceAndMoveBall();
         }
         private void Lifelost(Vector2 brPoint)
         {
 
             if (brPoint.Y >= Height)
             {
-                // BallExists = false;
                 Player.Life--;
-                Ball.BRPoint = new Vector2(Player.Position.X + Player.Size.X / 2, Player.Position.Y - Ball.Size.Y - 5);
-                Ball.Direction = new Vector2(0, 0);
+                GobjectList.Remove(Ball);
+                GobjectList.Remove(Player);
+                Ball = CreateBall();
+                Player = CreatePlayer();
                 if (Player.Life <= 0)
                     GameOver();
             }
         }
-        private void BounceAndMove()
+        private void BounceAndMoveBall()
         {
             BallDistance = Elapsed * Ball.Speed;
             Ball.Direction.Normalize();
@@ -123,7 +147,8 @@ namespace Brickout
             Intersection intersection = default;
 
             isHitList = GobjectList
-                 .Where(g => g.BallIsHitting(ballLine, Ball))
+                .Except(PowerupList)
+                 .Where(g => g.ObjectIsHitting(ballLine, Ball))
                  .ToList();
 
             if (isHitList.Any())
@@ -172,8 +197,16 @@ namespace Brickout
         {
             if (brick.BrickID == 9)
             {
-                //ToDo
+                Powerup powerup = new Powerup(
+                    new Vector2(brick.Position.X + brick.Size.X / 2, brick.Position.Y + brick.Size.Y + Ball.Size.Y),
+                    Random.Next(2));
+                PowerupList.Add(powerup);
+                GobjectList.Add(powerup);
             }
+        }
+        public Player CreatePlayer()
+        {
+            return new Player(new Vector2(Width / 2f, Height - 55));
         }
         private Ball CreateBall()
         {
