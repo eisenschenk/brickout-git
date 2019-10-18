@@ -22,7 +22,6 @@ namespace Brickout
         public float BallDistance;
         public int Width;
         public int Height;
-        bool BallExists;
         DirectInput DirectInput;
         Keyboard Keyboard;
         Bitmap Tileset;
@@ -164,14 +163,20 @@ namespace Brickout
                 if (brick.Durability <= 0)
                 {
                     GobjectList.Remove(gObject);
-                    Score.Number++;
+                    Score.Number += brick.ScorePoints;
+                    PowerupHit(brick);
                 }
             }
         }
-
+        public void PowerupHit(Brick brick)
+        {
+            if (brick.BrickID == 9)
+            {
+                //ToDo
+            }
+        }
         private Ball CreateBall()
         {
-            BallExists = true;
             return new Ball(Player);
         }
         public void Dispose()

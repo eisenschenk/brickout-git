@@ -11,21 +11,29 @@ namespace Brickout
     class Brick : GameObject
     {
         public int Durability;
-        public Brick(Vector2 position, int durability, Ball ball) : base(position, new Vector2(70, 30), ReturnBrick(durability))
+        public int ScorePoints;
+        public int BrickID;
+        public Brick(Vector2 position, int brickID, Ball ball) : base(position, new Vector2(70, 30), ReturnBrick(brickID))
         {
-            Durability = durability;
+            if (brickID <= 8)
+                Durability = brickID;
+            else
+                Durability = 1;
+            ScorePoints = brickID * 10;
+            BrickID = brickID;
         }
 
-        private static readonly Dictionary<int, int> DurabiltyToSpriteID = new Dictionary<int, int>
+        private static readonly Dictionary<int, int> BrickIDToSpriteID = new Dictionary<int, int>
         {
             [1] = 14,
             [2] = 15,
             [3] = 16,
+            [9] = 17,
         };
 
-        private static RawRectangleF ReturnBrick(int durability)
+        private static RawRectangleF ReturnBrick(int brickID)
         {
-            if (!DurabiltyToSpriteID.TryGetValue(durability, out int spriteID))
+            if (!BrickIDToSpriteID.TryGetValue(brickID, out int spriteID))
                 spriteID = 1;
 
             Vector2 start = new Vector2(48, 8);
@@ -40,22 +48,7 @@ namespace Brickout
                 start.Y + (distance + height) * row,
                 start.X + width + (distance + width) * cul,
                 start.Y + height + (distance + height) * row);
-
-
         }
-
-        //private static RawRectangleF ReturnBrick(int durability)
-        //{
-
-
-        //    switch (durability)
-        //    {
-        //        case 1: return new RawRectangleF(47, 48, 80, 63);   //silver
-        //        case 2: return new RawRectangleF(83, 48, 116, 63);  //gold
-        //        case 3: return new RawRectangleF(119, 48, 152, 63); //red
-        //        default: return new RawRectangleF(7, 48, 39, 63);
-        //    }
-        ////}
     }
 }
 
