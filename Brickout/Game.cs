@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace Brickout
 {
+    //powerup + size--> player freezes@right gameborder
+    //texoutput--> change text/numb string 
+    // imba ball --> no disable
+    // double ball not working
+    // lifelost--> not working with multimple balls
+    // player life --> value not shown
     class Game : IDisposable
     {
         List<GameObject> GobjectList = new List<GameObject>();
@@ -41,7 +47,7 @@ namespace Brickout
             Gameboard = new Gameboard(width, height, level, GobjectList);
             GobjectList.Add(Gameboard);
         }
-        
+
         public void LoadResources(RenderTarget render)
         {
             BackgroundColor = Color.CornflowerBlue;
@@ -78,10 +84,13 @@ namespace Brickout
             //debug ball imba
             if (keyboard.IsPressed(Key.F7))
                 Ball.BallImbalanced = true;
+            //debug ball split
+            if (keyboard.IsPressed(Key.F8))
+                GobjectList.Add(new Ball(Ball));
 
             MoveGameObjetcs();
         }
-        
+
         //ToDo
         private void GameOver()
         {
@@ -101,7 +110,7 @@ namespace Brickout
                                 .ToList();
                 if (isHitList.Any())
                 {
-                    pU.UsePowerup(Player, Ball);
+                    pU.UsePowerup(Player, Ball, GobjectList);
                     PowerupList.Remove(pU);
                     GobjectList.Remove(pU);
                     isHitList.Clear();
@@ -139,11 +148,7 @@ namespace Brickout
             Vector2 newBallPosition = Ball.BRPoint + Ball.Direction * BallDistance;
             Line ballLine = new Line(Ball.BRPoint, newBallPosition);
 
-            if (!BounceAndMove(ballLine))
-            {
-                Ball.Direction.Normalize();
-                Ball.Position += Ball.Direction * BallDistance;
-            }
+            BounceAndMove(ballLine);
         }
 
         private bool BounceAndMove(Line ballLine)
@@ -154,6 +159,7 @@ namespace Brickout
 
             isHitList = GobjectList
                 .Except(PowerupList)
+                .Where(b => !(b is Ball))
                  .Where(g => g.ObjectIsHitting(ballLine, Ball))
                  .ToList();
 
@@ -164,6 +170,12 @@ namespace Brickout
                 GameObject[] isHitArray = isHitList.ToArray();
                 isHitList.Clear();
                 BouncesBall(intersection, ballLine, isHitArray);
+            }
+            else
+            {
+                Ball.Direction.Normalize();
+                Ball.Position += Ball.Direction * BallDistance;
+
             }
 
 
@@ -190,9 +202,12 @@ namespace Brickout
         private List<GameObject> BallKillsAll(List<GameObject> isHitList)
         {
             if (Ball.BallImbalanced)
-                GobjectList = GobjectList.Except(isHitList.Where(g => g is Brick)).ToList();
-            return isHitList.Where(g => !(g is Brick)).ToList();
-
+            {
+                GobjectList = GobjectList.Except(isHitList.OfType<Brick>()).ToList();
+                Score.Number += isHitList.OfType<Brick>().Select(b => b.ScorePoints).Sum();
+                isHitList = isHitList.Where(g => !(g is Brick)).ToList();
+            }
+            return isHitList;
         }
         public void ReduceDurability(GameObject gObject)
         {

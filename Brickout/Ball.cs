@@ -16,6 +16,12 @@ namespace Brickout
             Speed = 200;
             Direction = new Vector2(0, 0);
         }
+        public Ball(Ball ball) : base(ball.Position, ball.Size, ball.Sprite)
+        {
+            Speed = ball.Speed;
+            Direction = ball.Direction;
+            Direction.X = ball.Direction.X * -1;
+        }
         public Vector2 BRPoint
         {
             get => Position + Size;

@@ -33,8 +33,8 @@ namespace Brickout
         {
             return Random.Next(4);
         }
-       
-        public void UsePowerup(Player player, Ball ball)
+
+        public void UsePowerup(Player player, Ball ball, List<GameObject> gObjectList)
         {
             Player playerBase = new Player(new Vector2(0, 0));
             Ball ballBase = new Ball(playerBase);
@@ -44,19 +44,24 @@ namespace Brickout
             {
                 case 0://playerSize abh. von PowerupId(entweder 1 oder -1)
                     if (player.Size.X < playerBase.Size.X * 2 || player.Size.X > playerBase.Size.X / 2)
-                        player.Size.X = player.Size.X + PowerupID * player.Size.X / 3;
+                        player.Size.X += PowerupID * playerBase.Size.X / 3;
                     break;
                 case 1://ballSpeed abh. von PowerupId(entweder 1 oder -1)
                     if (ball.Speed < ballBase.Speed * 2 || ball.Speed > ballBase.Speed / 2)
-                        ball.Speed = ball.Speed - PowerupID * ball.Speed / 3;
+                        ball.Speed -= PowerupID * ballBase.Speed / 3;
                     break;
                 case 2://ballSize abh. von PowerupID(entweder 1 oder -1)
                     if (ball.Size.X < ballBase.Size.X * 2 || ball.Size.X > ballBase.Size.X / 2)
-                        ball.Size = ball.Size + PowerupID * ball.Size / 2;
+                        ball.Size += PowerupID * ballBase.Size / 3;
                     break;
-                case 3:
-                    ball.BallImbalanced = true;
+                case 3:// ball kills all in its wake
+                    if (PowerupID == 1)
+                        ball.BallImbalanced = true;
                     break;
+                case 4:
+                    if (PowerupID == 1)
+                        gObjectList.Add(new Ball(ball));
+                        break;
                 default: return;
             }
         }
