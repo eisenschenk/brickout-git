@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Brickout
 {
-    // imba ball --> no disable
     // player life --> value not shown
     class Game : IDisposable
     {
@@ -72,12 +71,16 @@ namespace Brickout
         {
             Elapsed = elapsed;
             KeyboardState keyboard = Keyboard.GetCurrentState();
-
+            if (Ball.Direction.IsZero)
+            {
+                Ball.Position.X = Player.Position.X + Player.Size.X * 0.5f;
+                Ball.Position.Y = Player.Position.Y - Ball.Size.Y - 1;
+            }
             if (keyboard.IsPressed(Key.Left) && Player.IsValidMovementLeft(Player, Gameboard))
                 Player.Position.X += -Player.Speed;
             if (keyboard.IsPressed(Key.Right) && Player.IsValidMovementRight(Player, Gameboard))
                 Player.Position.X += Player.Speed;
-            if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero && Ball.Direction.IsZero && Player.Life >= 0)
+            if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero  && Player.Life >= 0)
                 Ball.Direction = new Vector2(0, -1);
             //debug player,ball
             Player playerBase = new Player(new Vector2(0, 0));
