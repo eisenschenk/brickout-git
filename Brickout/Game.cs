@@ -10,11 +10,7 @@ using System.Threading.Tasks;
 
 namespace Brickout
 {
-    //powerup + size--> player freezes@right gameborder
-    //texoutput--> change text/numb string 
     // imba ball --> no disable
-    // double ball not working
-    // lifelost--> not working with multiple balls
     // player life --> value not shown
     class Game : IDisposable
     {
@@ -28,13 +24,13 @@ namespace Brickout
         public Random Random = new Random();
         public Vector2 BallSize = new Vector2(20, 20);
         public float Elapsed;
-        //public float BallDistance;
         public int Width;
         public int Height;
         DirectInput DirectInput;
         Keyboard Keyboard;
         Bitmap Tileset;
         Color4 BackgroundColor;
+
 
 
         public Game(int width, int height, string level)
@@ -98,7 +94,10 @@ namespace Brickout
                 Player.Size.X -= playerBase.Size.X / 3;
             //debug ball imba
             if (keyboard.IsPressed(Key.F7))
+            {
                 Ball.BallImbalanced = true;
+                Ball.BallImbaNow.Start();
+            }
             //debug ball split
             if (keyboard.IsPressed(Key.F8))
                 GobjectList.Add(new Ball(Ball));
@@ -125,7 +124,7 @@ namespace Brickout
                                 .ToList();
                 if (isHitList.Any())
                 {
-                    pU.UsePowerup(Player, Ball, GobjectList, Gameboard, BallList);
+                    pU.UsePowerup(Player, GobjectList, Gameboard, BallList);
                     PowerupList.Remove(pU);
                     GobjectList.Remove(pU);
                     isHitList.Clear();
@@ -143,7 +142,6 @@ namespace Brickout
         }
         private void Lifelost()
         {
-
             foreach (Ball ball in BallList.ToArray())
                 if (ball.BRPoint.Y >= Height)
                 {
@@ -152,11 +150,10 @@ namespace Brickout
                     BallList.Remove(ball);
                     if (BallList.Count <= 0)
                     {
-                        Ball = CreateBall();
-                        GobjectList.Add(Ball);
                         GobjectList.Remove(Player);
                         Player = CreatePlayer();
                         GobjectList.Add(Player);
+                        Ball = CreateBall();
                         if (Player.Life <= 0)
                             GameOver();
                     }
@@ -191,7 +188,7 @@ namespace Brickout
                  .Where(g => g.ObjectIsHitting(ballLine, ball))
                  .ToList();
 
-            isHitList = BallKillsAll(isHitList, ball);
+            isHitList = BallIsImba(isHitList, ball);
             if (isHitList.Any())
             {
                 intersection = GameObject.GetIntersection(ballLine, ball, isHitList, isHitList);
@@ -203,7 +200,6 @@ namespace Brickout
             {
                 ball.Direction.Normalize();
                 ball.Position += ball.Direction * ball.Speed * Elapsed;
-
             }
 
 
@@ -228,13 +224,20 @@ namespace Brickout
                 ReduceDurability(gObject);
             }
         }
-        private List<GameObject> BallKillsAll(List<GameObject> isHitList, Ball ball)
+        private List<GameObject> BallIsImba(List<GameObject> isHitList, Ball ball)
         {
             if (ball.BallImbalanced)
             {
+                BallList.ForEach(b => b.Sprite = new RawRectangleF(66, 136, 74, 144));
                 GobjectList = GobjectList.Except(isHitList.OfType<Brick>()).ToList();
                 Score.Number += isHitList.OfType<Brick>().Select(b => b.ScorePoints).Sum();
+                isHitList.OfType<Brick>().Where(b => b.BrickID == 9).ToList().ForEach(p => PowerupBrickHit(p));
                 isHitList = isHitList.Where(g => !(g is Brick)).ToList();
+                if (ball.BallImbaNow.ElapsedMilliseconds > ball.BallImbaWindow.TotalMilliseconds)
+                {
+                    ball.BallImbalanced = false;
+                    ball.Sprite = new Ball(Player).Sprite;
+                }
             }
             return isHitList;
         }
@@ -269,7 +272,10 @@ namespace Brickout
         }
         private Ball CreateBall()
         {
-            return new Ball(Player);
+            Ball ball = new Ball(Player);
+            GobjectList.Add(ball);
+            BallList.Add(ball);
+            return ball;
         }
         public void Dispose()
         {

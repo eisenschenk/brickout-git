@@ -13,7 +13,7 @@ namespace Brickout
         public int Number;
         public Vector2 Position;
 
-        public TextCharacter[] Output => GetOutput(Text + Number.ToString());
+        public TextCharacter[] Output => GetOutput($"{Text} {Number}");
 
 
 

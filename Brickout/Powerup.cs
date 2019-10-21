@@ -31,51 +31,51 @@ namespace Brickout
         }
         private int GetEffect(int powerupID)
         {
-            return Random.Next(1);
+            return Random.Next(5);
         }
 
-        public void UsePowerup(Player player, Ball ball, List<GameObject> gObjectList, Gameboard gameboard, List<Ball> BallList)
+        public void UsePowerup(Player player, List<GameObject> gObjectList, Gameboard gameboard, List<Ball> BallList)
         {
             Player playerBase = new Player(new Vector2(0, 0));
             Ball ballBase = new Ball(playerBase);
 
             //playerSize+, playerSize-, ballFaster, ballSlower, ballIMBA, 2Balls
-            switch (Effect)
-            {
-                //case 0://playerSize abh. von PowerupId(entweder 1 oder -1)
-                //    if (player.Size.X < playerBase.Size.X * 2 && player.Size.X > playerBase.Size.X * 0.5f)
-                //    {
-                //        player.Size.X += PowerupID * playerBase.Size.X / 3;
-                //        if (!gameboard.IncludesGameObject(player))
-                //            player.Position.X = gameboard.Width - player.Size.X;
-                //    }
-                //    break;
-                //case 1://ballSpeed abh. von PowerupId(entweder 1 oder -1)
-                //    if (ball.Speed < ballBase.Speed * 1.5f && ball.Speed > ballBase.Speed * 0.2f)
-                //        ball.Speed -= PowerupID * ballBase.Speed / 5;
-                //    break;
-                //case 2://ballSize abh. von PowerupID(entweder 1 oder -1)
-                //    if (ball.Size.X < ballBase.Size.X * 1.5f && ball.Size.X > ballBase.Size.X * 0.5f)
-                //        ball.Size += PowerupID * ballBase.Size / 3;
-                //    break;
-                //case 3:// ball kills all in its wake
-                //    if (PowerupID == 1)
-                //        ball.BallImbalanced = true;
-                //    break;
-                case 0://double ball
-                    if (PowerupID == 1)
-                    {
-                        foreach (Ball bal in BallList.ToArray())
-                        {
 
-                            Ball ballNew = new Ball(bal);
+            //playerSize abh. von PowerupId(entweder 1 oder -1)
+            if (Effect == 0 && player.Size.X < playerBase.Size.X * 2 && player.Size.X > playerBase.Size.X * 0.5f)
+            {
+                player.Size.X += PowerupID * playerBase.Size.X / 3;
+                if (!gameboard.IncludesGameObject(player))
+                    player.Position.X = gameboard.Width - player.Size.X;
+            }
+            foreach (Ball ball in BallList.ToArray())
+                switch (Effect)
+                {
+                    case 1://ballSpeed abh. von PowerupId(entweder 1 oder -1)
+                        if (ball.Speed < ballBase.Speed * 1.5f && ball.Speed > ballBase.Speed * 0.2f)
+                            ball.Speed -= PowerupID * ballBase.Speed / 5;
+                        break;
+                    case 2://ballSize abh. von PowerupID(entweder 1 oder -1)
+                        if (ball.Size.X < ballBase.Size.X * 1.5f && ball.Size.X > ballBase.Size.X * 0.5f)
+                            ball.Size += PowerupID * ballBase.Size / 3;
+                        break;
+                    case 3:// ball kills all in its wake
+                        if (PowerupID == 1)
+                        {
+                            ball.BallImbalanced = true;
+                            ball.BallImbaNow.Start();
+                        }
+                        break;
+                    case 4://double ball
+                        if (PowerupID == 1)
+                        {
+                            Ball ballNew = new Ball(ball);
                             gObjectList.Add(ballNew);
                             BallList.Add(ballNew);
                         }
-                    }
-                    break;
-                default: return;
-            }
+                        break;
+                    default: return;
+                }
         }
         private static RawRectangleF ReturnRectangle(int powerupID)
         {
