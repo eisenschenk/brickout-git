@@ -16,7 +16,7 @@ namespace Brickout
             Speed = 200;
             Direction = new Vector2(0, 0);
         }
-        public Ball(Ball ball) : base(ball.Position, ball.Size, ball.Sprite)
+        public Ball(Ball ball) : base(ball.Position, ball.Size, new RawRectangleF(57,136,65,144))
         {
             Speed = ball.Speed;
             Direction = ball.Direction;

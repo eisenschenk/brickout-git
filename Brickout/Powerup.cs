@@ -31,10 +31,10 @@ namespace Brickout
         }
         private int GetEffect(int powerupID)
         {
-            return Random.Next(4);
+            return Random.Next(1);
         }
 
-        public void UsePowerup(Player player, Ball ball, List<GameObject> gObjectList)
+        public void UsePowerup(Player player, Ball ball, List<GameObject> gObjectList, Gameboard gameboard, List<Ball> BallList)
         {
             Player playerBase = new Player(new Vector2(0, 0));
             Ball ballBase = new Ball(playerBase);
@@ -42,26 +42,38 @@ namespace Brickout
             //playerSize+, playerSize-, ballFaster, ballSlower, ballIMBA, 2Balls
             switch (Effect)
             {
-                case 0://playerSize abh. von PowerupId(entweder 1 oder -1)
-                    if (player.Size.X < playerBase.Size.X * 2 || player.Size.X > playerBase.Size.X / 2)
-                        player.Size.X += PowerupID * playerBase.Size.X / 3;
-                    break;
-                case 1://ballSpeed abh. von PowerupId(entweder 1 oder -1)
-                    if (ball.Speed < ballBase.Speed * 2 || ball.Speed > ballBase.Speed / 2)
-                        ball.Speed -= PowerupID * ballBase.Speed / 3;
-                    break;
-                case 2://ballSize abh. von PowerupID(entweder 1 oder -1)
-                    if (ball.Size.X < ballBase.Size.X * 2 || ball.Size.X > ballBase.Size.X / 2)
-                        ball.Size += PowerupID * ballBase.Size / 3;
-                    break;
-                case 3:// ball kills all in its wake
+                //case 0://playerSize abh. von PowerupId(entweder 1 oder -1)
+                //    if (player.Size.X < playerBase.Size.X * 2 && player.Size.X > playerBase.Size.X * 0.5f)
+                //    {
+                //        player.Size.X += PowerupID * playerBase.Size.X / 3;
+                //        if (!gameboard.IncludesGameObject(player))
+                //            player.Position.X = gameboard.Width - player.Size.X;
+                //    }
+                //    break;
+                //case 1://ballSpeed abh. von PowerupId(entweder 1 oder -1)
+                //    if (ball.Speed < ballBase.Speed * 1.5f && ball.Speed > ballBase.Speed * 0.2f)
+                //        ball.Speed -= PowerupID * ballBase.Speed / 5;
+                //    break;
+                //case 2://ballSize abh. von PowerupID(entweder 1 oder -1)
+                //    if (ball.Size.X < ballBase.Size.X * 1.5f && ball.Size.X > ballBase.Size.X * 0.5f)
+                //        ball.Size += PowerupID * ballBase.Size / 3;
+                //    break;
+                //case 3:// ball kills all in its wake
+                //    if (PowerupID == 1)
+                //        ball.BallImbalanced = true;
+                //    break;
+                case 0://double ball
                     if (PowerupID == 1)
-                        ball.BallImbalanced = true;
+                    {
+                        foreach (Ball bal in BallList.ToArray())
+                        {
+
+                            Ball ballNew = new Ball(bal);
+                            gObjectList.Add(ballNew);
+                            BallList.Add(ballNew);
+                        }
+                    }
                     break;
-                case 4:
-                    if (PowerupID == 1)
-                        gObjectList.Add(new Ball(ball));
-                        break;
                 default: return;
             }
         }

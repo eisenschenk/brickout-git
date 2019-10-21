@@ -28,5 +28,10 @@ namespace Brickout
             playerR.Size = player.Size;
             return (gameboard.IncludesGameObject(playerR));
         }
+        //public bool ValidateBigPlayer( Gameboard gameboard)
+        //{
+           
+        //    return gameboard.IncludesGameObject(bigPlayer);
+        //}
     }
 }
