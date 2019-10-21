@@ -32,16 +32,16 @@ namespace Brickout
 
         public Game(int width, int height, string level)
         {
+            Width = width;
+            Height = height;
             Player = CreatePlayer();
             GobjectList.Add(Player);
             Ball = CreateBall();
             GobjectList.Add(Ball);
             Gameboard = new Gameboard(width, height, level, GobjectList);
             GobjectList.Add(Gameboard);
-            Width = width;
-            Height = height;
         }
-
+        
         public void LoadResources(RenderTarget render)
         {
             BackgroundColor = Color.CornflowerBlue;
@@ -75,9 +75,13 @@ namespace Brickout
                 Player.Position.X += Player.Speed;
             if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero && Player.Life >= 0)
                 Ball.Direction = new Vector2(0, -1);
+            //debug ball imba
+            if (keyboard.IsPressed(Key.F7))
+                Ball.BallImbalanced = true;
 
             MoveGameObjetcs();
         }
+        
         //ToDo
         private void GameOver()
         {
@@ -119,9 +123,11 @@ namespace Brickout
             {
                 Player.Life--;
                 GobjectList.Remove(Ball);
-                GobjectList.Remove(Player);
                 Ball = CreateBall();
+                GobjectList.Add(Ball);
+                GobjectList.Remove(Player);
                 Player = CreatePlayer();
+                GobjectList.Add(Player);
                 if (Player.Life <= 0)
                     GameOver();
             }
@@ -151,6 +157,7 @@ namespace Brickout
                  .Where(g => g.ObjectIsHitting(ballLine, Ball))
                  .ToList();
 
+            isHitList = BallKillsAll(isHitList);
             if (isHitList.Any())
             {
                 intersection = GameObject.GetIntersection(ballLine, Ball, isHitList, isHitList);
@@ -158,6 +165,7 @@ namespace Brickout
                 isHitList.Clear();
                 BouncesBall(intersection, ballLine, isHitArray);
             }
+
 
             return isHit;
         }
@@ -179,6 +187,13 @@ namespace Brickout
                 ReduceDurability(gObject);
             }
         }
+        private List<GameObject> BallKillsAll(List<GameObject> isHitList)
+        {
+            if (Ball.BallImbalanced)
+                GobjectList = GobjectList.Except(isHitList.Where(g => g is Brick)).ToList();
+            return isHitList.Where(g => !(g is Brick)).ToList();
+
+        }
         public void ReduceDurability(GameObject gObject)
         {
             if (gObject is Brick)
@@ -189,17 +204,17 @@ namespace Brickout
                 {
                     GobjectList.Remove(gObject);
                     Score.Number += brick.ScorePoints;
-                    PowerupHit(brick);
+                    PowerupBrickHit(brick);
                 }
             }
         }
-        public void PowerupHit(Brick brick)
+        public void PowerupBrickHit(Brick brick)
         {
             if (brick.BrickID == 9)
             {
                 Powerup powerup = new Powerup(
                     new Vector2(brick.Position.X + brick.Size.X / 2, brick.Position.Y + brick.Size.Y + Ball.Size.Y),
-                    Random.Next(2));
+                    Random.Next(2), Random);
                 PowerupList.Add(powerup);
                 GobjectList.Add(powerup);
             }

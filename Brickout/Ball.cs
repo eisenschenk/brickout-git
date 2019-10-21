@@ -10,7 +10,7 @@ namespace Brickout
 {
     class Ball : GameObject
     {
-
+        public bool BallImbalanced;
         public Ball(Player player) : base(new Vector2(player.Position.X + player.Size.X / 2, player.Position.Y - 25), new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
         {
             Speed = 200;
