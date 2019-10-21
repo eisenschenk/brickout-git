@@ -19,7 +19,6 @@ namespace Brickout
         public Player Player;
         public Ball Ball;
         public Gameboard Gameboard;
-        public Textoutput Score = new Textoutput("Score: ", new Vector2(2, 2));
         public Random Random = new Random();
         public Vector2 BallSize = new Vector2(20, 20);
         public float Elapsed;
@@ -29,8 +28,10 @@ namespace Brickout
         Keyboard Keyboard;
         Bitmap Tileset;
         Color4 BackgroundColor;
+        int Score;
 
-
+        private IEnumerable<TextCharacter> AllCharacters => TextCharacter.GetOutput($"Score: {Score}", new Vector2(8, 2))
+            .Concat(TextCharacter.GetOutput($"Life: {Player.Life}", new Vector2(Width - 120, 2)));
 
         public Game(int width, int height, string level)
         {
@@ -39,8 +40,6 @@ namespace Brickout
             Player = CreatePlayer();
             GobjectList.Add(Player);
             Ball = CreateBall();
-            GobjectList.Add(Ball);
-            BallList.Add(Ball);
             Gameboard = new Gameboard(width, height, level, GobjectList);
             GobjectList.Add(Gameboard);
         }
@@ -61,7 +60,7 @@ namespace Brickout
             render.Clear(BackgroundColor);
             GobjectList.ForEach(r => render.DrawBitmap(Tileset, new RectangleF(r.Position.X, r.Position.Y, r.Size.X, r.Size.Y),
                     1, BitmapInterpolationMode.Linear, r.Sprite));
-            foreach (TextCharacter character in Score.Output)
+            foreach (TextCharacter character in AllCharacters)
                 render.DrawBitmap(Tileset, new RectangleF(character.Position.X, character.Position.Y, character.Size.X, character.Size.Y),
                     1, BitmapInterpolationMode.Linear, character.Sprite);
             render.EndDraw();
@@ -80,7 +79,7 @@ namespace Brickout
                 Player.Position.X += -Player.Speed;
             if (keyboard.IsPressed(Key.Right) && Player.IsValidMovementRight(Player, Gameboard))
                 Player.Position.X += Player.Speed;
-            if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero  && Player.Life >= 0)
+            if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero && Player.Life >= 0)
                 Ball.Direction = new Vector2(0, -1);
             //debug player,ball
             Player playerBase = new Player(new Vector2(0, 0));
@@ -148,17 +147,13 @@ namespace Brickout
             foreach (Ball ball in BallList.ToArray())
                 if (ball.BRPoint.Y >= Height)
                 {
-                    Player.Life--;
                     GobjectList.Remove(ball);
                     BallList.Remove(ball);
                     if (BallList.Count <= 0)
                     {
-                        GobjectList.Remove(Player);
-                        Player = CreatePlayer();
-                        GobjectList.Add(Player);
+                        Player.LifeLost();
                         Ball = CreateBall();
-                        if (Player.Life <= 0)
-                            GameOver();
+
                     }
                 }
         }
@@ -233,7 +228,7 @@ namespace Brickout
             {
                 BallList.ForEach(b => b.Sprite = new RawRectangleF(66, 136, 74, 144));
                 GobjectList = GobjectList.Except(isHitList.OfType<Brick>()).ToList();
-                Score.Number += isHitList.OfType<Brick>().Select(b => b.ScorePoints).Sum();
+                Score += isHitList.OfType<Brick>().Select(b => b.ScorePoints).Sum();
                 isHitList.OfType<Brick>().Where(b => b.BrickID == 9).ToList().ForEach(p => PowerupBrickHit(p));
                 isHitList = isHitList.Where(g => !(g is Brick)).ToList();
                 if (ball.BallImbaNow.ElapsedMilliseconds > ball.BallImbaWindow.TotalMilliseconds)
@@ -246,14 +241,13 @@ namespace Brickout
         }
         public void ReduceDurability(GameObject gObject)
         {
-            if (gObject is Brick)
+            if (gObject is Brick brick)
             {
-                Brick brick = (Brick)gObject;
                 brick.Durability--;
                 if (brick.Durability <= 0)
                 {
                     GobjectList.Remove(gObject);
-                    Score.Number += brick.ScorePoints;
+                    Score += brick.ScorePoints;
                     PowerupBrickHit(brick);
                 }
             }
