@@ -259,7 +259,7 @@ namespace Brickout
             {
                 Powerup powerup = new Powerup(
                     new Vector2(brick.Position.X + brick.Size.X / 2, brick.Position.Y + brick.Size.Y + Ball.Size.Y),
-                    Random.Next(2), Random);
+                    Random.Next(2) == 0 ? PowerUpType.Negative : PowerUpType.Positive, Random);
                 PowerupList.Add(powerup);
                 GobjectList.Add(powerup);
             }

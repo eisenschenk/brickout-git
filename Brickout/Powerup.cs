@@ -10,31 +10,30 @@ namespace Brickout
 {
     class Powerup : GameObject
     {
-        public int PowerupModifier;
         public PowerUpEffect Effect;
         public Random Random;
+
         public Vector2 BRPoint
         {
             get => Position + Size;
             set => Position = value - Size;
         }
-        public Powerup(Vector2 position, int powerupModifier, Random random) : base(position, new Vector2(20, 20), ReturnRectangle(powerupModifier))
+        public Powerup(Vector2 position, PowerUpType powerUpType, Random random)
+            : base(position, new Vector2(20, 20), GetSprite(powerUpType))
         {
-            PowerupModifier = powerupModifier;
             Random = random;
-            Effect = GetEffect(powerupModifier);
+            Effect = GetEffect(powerUpType);
             Direction = new Vector2(0, 1);
             Speed = 50;
-            if (powerupModifier != 1)
-                PowerupModifier = -1;
-
         }
-        private PowerUpEffect GetEffect(int powerupID)
+        private PowerUpEffect GetEffect(PowerUpType powerUpType)
         {
-            if (powerupID == 1)
-                return (PowerUpEffect)Random.Next(5);
+            int positivePowerUpCount = 5;
+            int negativePowerUpCount = 3;
+            if (powerUpType == PowerUpType.Positive)
+                return (PowerUpEffect)Random.Next(positivePowerUpCount);
             else
-                return (PowerUpEffect)Random.Next(3);
+                return (PowerUpEffect)(Random.Next(negativePowerUpCount) + positivePowerUpCount);
         }
 
         public void UsePowerup(Player player, List<GameObject> gObjectList, Gameboard gameboard, List<Ball> BallList)
@@ -44,44 +43,47 @@ namespace Brickout
             foreach (Ball ball in BallList.ToArray())
                 switch (Effect)
                 {
-                    case PowerUpEffect.PlayerSize: PlayerSize(player, playerBase, gameboard); break;
-                    case PowerUpEffect.BallSpeed: BallSpeed(ball, ballBase); break;
-                    case PowerUpEffect.BallSize: BallSize(ball, ballBase); break;
-                    case PowerUpEffect.BallImba: BallImba(ball); break;
-                    case PowerUpEffect.BallSplit: BallSplit(gObjectList, BallList, ball); break;
-                    default: return;
+                    case PowerUpEffect.PlayerSizeLarger: ChangePlayerSize(player, playerBase, gameboard, 1); break;
+                    case PowerUpEffect.PlayerSizeSmaller: ChangePlayerSize(player, playerBase, gameboard, -1); break;
+                    case PowerUpEffect.BallSpeedFaster: ChangeBallSpeed(ball, ballBase, 1); break;
+                    case PowerUpEffect.BallSpeedSlower: ChangeBallSpeed(ball, ballBase, -1); break;
+                    case PowerUpEffect.BallSizeLarger: ChangeBallSize(ball, ballBase, 1); break;
+                    case PowerUpEffect.BallSizeSmaller: ChangeBallSize(ball, ballBase, -1); break;
+                    case PowerUpEffect.BallImba: MakeBallImba(ball); break;
+                    case PowerUpEffect.BallSplit: SplitBall(gObjectList, BallList, ball); break;
+                    default: throw new NotImplementedException();
                 }
         }
-        private static RawRectangleF ReturnRectangle(int powerupID)
+        private static RawRectangleF GetSprite(PowerUpType powerUpType)
         {
-            if (powerupID == 1)
+            if (powerUpType == PowerUpType.Positive)
                 return new RawRectangleF(238, 176, 251, 191);
             else
                 return new RawRectangleF(328, 176, 341, 191);
         }
-        public void PlayerSize(Player player, Player playerBase, Gameboard gameboard)
+        public void ChangePlayerSize(Player player, Player playerBase, Gameboard gameboard, int modifier)
         {
             if (player.Size.X < playerBase.Size.X * 2 && player.Size.X > playerBase.Size.X * 0.5f)
-                player.Size.X += PowerupModifier * playerBase.Size.X / 3;
+                player.Size.X += modifier * playerBase.Size.X / 3;
             if (!gameboard.IncludesGameObject(player))
                 player.Position.X = gameboard.Width - player.Size.X;
         }
-        public void BallSpeed(Ball ball, Ball ballBase)
+        public void ChangeBallSpeed(Ball ball, Ball ballBase, int modifier)
         {
             if (ball.Speed < ballBase.Speed * 1.5f && ball.Speed > ballBase.Speed * 0.2f)
-                ball.Speed -= PowerupModifier * ballBase.Speed / 5;
+                ball.Speed += modifier * ballBase.Speed / 5;
         }
-        public void BallSize(Ball ball, Ball ballBase)
+        public void ChangeBallSize(Ball ball, Ball ballBase, int modifier)
         {
             if (ball.Size.X < ballBase.Size.X * 1.5f && ball.Size.X > ballBase.Size.X * 0.5f)
-                ball.Size += PowerupModifier * ballBase.Size / 3;
+                ball.Size += modifier * ballBase.Size / 3;
         }
-        private void BallImba(Ball ball)
+        private void MakeBallImba(Ball ball)
         {
             ball.BallImbalanced = true;
             ball.BallImbaNow.Start();
         }
-        private void BallSplit(List<GameObject> gObjectList, List<Ball> BallList, Ball ball)
+        private void SplitBall(List<GameObject> gObjectList, List<Ball> BallList, Ball ball)
         {
             Ball ballNew = ball.Split();
             gObjectList.Add(ballNew);
@@ -90,10 +92,19 @@ namespace Brickout
     }
     enum PowerUpEffect
     {
-        PlayerSize,
-        BallSpeed,
-        BallSize,
+        PlayerSizeLarger,
+        BallSpeedSlower,
+        BallSizeLarger,
         BallImba,
         BallSplit,
+        PlayerSizeSmaller,
+        BallSpeedFaster,
+        BallSizeSmaller,
+    }
+
+    enum PowerUpType
+    {
+        Positive,
+        Negative,
     }
 }

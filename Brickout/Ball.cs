@@ -16,22 +16,21 @@ namespace Brickout
         public readonly TimeSpan BallImbaWindow = TimeSpan.FromSeconds(10);
         private List<Ball> BallList;
         public override RawRectangleF Sprite => GetSprite();
-        public Ball(Player player, List<Ball> ballList) : base(new Vector2(player.Position.X + player.Size.X / 2, player.Position.Y - 25),
-            new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
-        {
-            Speed = 200;
-            Direction = new Vector2(0, 0);
-            BallList = ballList;
-        }
-        private Ball(Vector2 position, Vector2 size, RawRectangleF sprite, float speed, Vector2 direction) : base(position, size, sprite)
+        public Ball(Player player, List<Ball> ballList)
+            : this(new Vector2(player.Position.X + player.Size.X / 2, player.Position.Y - 25), new Vector2(20, 20),
+                  new RawRectangleF(48, 136, 56, 144), 200, default, ballList ) { }
+
+        private Ball(Vector2 position, Vector2 size, RawRectangleF sprite, float speed, Vector2 direction, List<Ball> ballList)
+            : base(position, size, sprite)
         {
             Speed = speed;
             Direction = direction;
+            BallList = ballList;
         }
         public Ball() : base(new Vector2(0, 0), new Vector2(20, 20), new RawRectangleF()) { }
         public Ball Split()
         {
-            return new Ball(Position, Size, Sprite, Speed, Direction * new Vector2(-1, 1));
+            return new Ball(Position, Size, Sprite, Speed, Direction * new Vector2(-1, 1), BallList);
         }
         public Vector2 BRPoint
         {

@@ -13,7 +13,7 @@ namespace Brickout
         public int Durability;
         public int ScorePoints;
         public int BrickID;
-        public Brick(Vector2 position, int brickID, Ball ball) : base(position, new Vector2(70, 30), ReturnBrick(brickID))
+        public Brick(Vector2 position, int brickID, Ball ball) : base(position, new Vector2(70, 30), GetSprite(brickID))
         {
             if (brickID <= 8)
                 Durability = brickID;
@@ -31,7 +31,7 @@ namespace Brickout
             [9] = 17,
         };
 
-        private static RawRectangleF ReturnBrick(int brickID)
+        private static RawRectangleF GetSprite(int brickID)
         {
             if (!BrickIDToSpriteID.TryGetValue(brickID, out int spriteID))
                 spriteID = 1;
