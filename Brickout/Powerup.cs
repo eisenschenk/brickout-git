@@ -39,7 +39,6 @@ namespace Brickout
             Player playerBase = new Player(new Vector2(0, 0));
             Ball ballBase = new Ball(playerBase);
 
-            //playerSize+, playerSize-, ballFaster, ballSlower, ballIMBA, 2Balls
 
             //playerSize abh. von PowerupId(entweder 1 oder -1)
             if (Effect == 0 && player.Size.X < playerBase.Size.X * 2 && player.Size.X > playerBase.Size.X * 0.5f)

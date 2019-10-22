@@ -36,7 +36,11 @@ namespace Brickout
             Size = size;
             Sprite = sprite;
         }
-
+        public void Move(float elapsed)
+        {
+            Direction.Normalize();
+            Position += Direction * Speed * elapsed;
+        }
         public bool ObjectIsHitting(Line ballLine, GameObject ball)
         {
             Vector2 nullVector = new Vector2(0, 0);

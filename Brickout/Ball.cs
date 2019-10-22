@@ -30,6 +30,7 @@ namespace Brickout
             get => Position + Size;
             set => Position = value - Size;
         }
+       
         public Vector2 Bounce(Intersection intersection, Line ballLine, Gameboard gameboard)
         {
             Vector2 Bounce()

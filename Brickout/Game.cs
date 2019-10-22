@@ -131,7 +131,7 @@ namespace Brickout
                     isHitList.Clear();
                 }
                 else
-                    pU.Position += pU.Direction * Elapsed * pU.Speed;
+                    pU.Move(Elapsed);
             }
 
         }
@@ -160,9 +160,7 @@ namespace Brickout
             foreach (GameObject gObject in GobjectList.ToArray())
                 if (gObject is Ball)
                 {
-
                     Ball ball = (Ball)gObject;
-                    // BallDistance = Elapsed * ball.Speed;
                     ball.Direction.Normalize();
                     Vector2 newBallPosition = ball.BRPoint + ball.Direction * ball.Speed * Elapsed;
                     Line ballLine = new Line(ball.BRPoint, newBallPosition);
@@ -191,10 +189,7 @@ namespace Brickout
                 BouncesBall(intersection, ballLine, isHitArray, ball);
             }
             else
-            {
-                ball.Direction.Normalize();
-                ball.Position += ball.Direction * ball.Speed * Elapsed;
-            }
+                ball.Move(Elapsed);
             return isHit;
         }
         private void BouncesBall(Intersection intersection, Line ballLine, GameObject[] isHitArray, Ball ball)
@@ -206,7 +201,6 @@ namespace Brickout
             ball.Direction *= intersection.LengthAfterIntersection;
             ball.BRPoint = intersection.IntersectionPoint + ball.Direction;
             Line newBallLine = new Line(intersection.IntersectionPoint, intersection.IntersectionPoint + ball.Direction);
-            //isHitArray.ToList().ForEach(g => GobjectList.Remove(g));
             GobjectList = GobjectList.Except(isHitArray).ToList();
             if (newBallLine.Start != newBallLine.End)
                 BounceAndMove(newBallLine, ball);

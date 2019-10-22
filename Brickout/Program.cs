@@ -61,10 +61,9 @@ namespace Brickout
                     TimeSpan totalTime = gameTime.Elapsed;
                     TimeSpan elapsed = totalTime - lastUpdate;
                     lastUpdate = totalTime;
-                    //float t = 0.02f;
                     game.Update((float)elapsed.TotalSeconds);
                     game.DrawScene(renderTarget);
-                    //Thread.Sleep(TimeSpan.FromSeconds(1));
+                    //Thread.Sleep(TimSeSpan.FromSeconds(1));
                 });
             }
         }
