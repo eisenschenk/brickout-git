@@ -12,14 +12,14 @@ namespace Brickout
     class Ball : GameObject
     {
         public bool BallImbalanced;
-        public Stopwatch BallImbaNow=new Stopwatch();
+        public Stopwatch BallImbaNow = new Stopwatch();
         public TimeSpan BallImbaWindow = TimeSpan.FromSeconds(10);
         public Ball(Player player) : base(new Vector2(player.Position.X + player.Size.X / 2, player.Position.Y - 25), new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
         {
             Speed = 200;
             Direction = new Vector2(0, 0);
         }
-        public Ball(Ball ball) : base(ball.Position, ball.Size, new RawRectangleF(57,136,65,144))
+        public Ball(Ball ball) : base(ball.Position, ball.Size, new RawRectangleF(57, 136, 65, 144))
         {
             Speed = ball.Speed;
             Direction = ball.Direction;
@@ -30,7 +30,16 @@ namespace Brickout
             get => Position + Size;
             set => Position = value - Size;
         }
-       
+        public void Color(string color)
+        {
+            switch (color)
+            {
+                case "green": Sprite = new RawRectangleF(57, 136, 65, 144); break;
+                case "red": Sprite = new RawRectangleF(66, 136, 74, 144); break;
+                case "purple": Sprite = new RawRectangleF(75, 136, 83, 144); break;
+                default: Sprite = new RawRectangleF(48, 136, 56, 144); break;
+            }
+        }
         public Vector2 Bounce(Intersection intersection, Line ballLine, Gameboard gameboard)
         {
             Vector2 Bounce()

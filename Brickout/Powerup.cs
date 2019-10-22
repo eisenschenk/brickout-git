@@ -65,7 +65,7 @@ namespace Brickout
                             ball.BallImbaNow.Start();
                         }
                         else
-                        {
+                        {//setting effect, redoing UsePowerup
                             Effect = Random.Next(3);
                             UsePowerup(player, gObjectList, gameboard, BallList);
                         }
@@ -78,7 +78,7 @@ namespace Brickout
                             BallList.Add(ballNew);
                         }
                         else
-                        {
+                        {//setting effect, redoing UsePowerup
                             Effect = Random.Next(3);
                             UsePowerup(player, gObjectList, gameboard, BallList);
                         }
