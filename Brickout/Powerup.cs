@@ -76,6 +76,7 @@ namespace Brickout
                             Ball ballNew = new Ball(ball);
                             gObjectList.Add(ballNew);
                             BallList.Add(ballNew);
+                            BallList.ForEach(b => b.Color("green"));
                         }
                         else
                         {//setting effect, redoing UsePowerup

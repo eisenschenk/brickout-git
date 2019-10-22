@@ -93,12 +93,12 @@ namespace Brickout
             ////debug playerSize-
             //if (keyboard.IsPressed(Key.F2))
             //    Player.Size.X -= playerBase.Size.X / 3;
-            ////debug ball imba
-            //if (keyboard.IsPressed(Key.F7))
-            //{
-            //    Ball.BallImbalanced = true;
-            //    Ball.BallImbaNow.Start();
-            //}
+            //debug ball imba
+            if (keyboard.IsPressed(Key.F7))
+            {
+                Ball.BallImbalanced = true;
+                Ball.BallImbaNow.Start();
+            }
             ////debug ball split
             //if (keyboard.IsPressed(Key.F8))
             //    GobjectList.Add(new Ball(Ball));
@@ -148,6 +148,8 @@ namespace Brickout
                 {
                     GobjectList.Remove(ball);
                     BallList.Remove(ball);
+                    if (BallList.Count == 1 && !BallList[0].BallImbalanced)
+                        BallList[0].Color("blue");
                     if (BallList.Count <= 0)
                     {
                         Player.LifeLost();
@@ -214,16 +216,16 @@ namespace Brickout
         {
             if (ball.BallImbalanced)
             {
-                BallList.ForEach(b => b.Sprite = new RawRectangleF(66, 136, 74, 144));
+                BallList.ForEach(b => b.Color("red"));
                 GobjectList = GobjectList.Except(isHitList.OfType<Brick>()).ToList();
                 Score += isHitList.OfType<Brick>().Select(b => b.ScorePoints).Sum();
                 isHitList.OfType<Brick>().Where(b => b.BrickID == 9).ToList().ForEach(p => PowerupBrickHit(p));
                 isHitList = isHitList.Where(g => !(g is Brick)).ToList();
                 if (ball.BallImbaNow.ElapsedMilliseconds > ball.BallImbaWindow.TotalMilliseconds)
-                {
-                    ball.BallImbalanced = false;
-                    ball.Sprite = new Ball(Player).Sprite;
-                }
+                    if (BallList.Count == 1)
+                        BallList.ForEach(b => { b.Color(""); b.BallImbalanced = false; });
+                    else
+                        BallList.ForEach(b => { b.Color("green"); b.BallImbalanced = false; });
             }
             return isHitList;
         }
