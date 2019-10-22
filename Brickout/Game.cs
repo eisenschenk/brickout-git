@@ -160,8 +160,7 @@ namespace Brickout
         }
         private void Lifelost()
         {
-            foreach (Ball ball in BallList.ToArray())
-                if (ball.BRPoint.Y >= Height)
+            foreach (Ball ball in BallList.ToArray().Where(b => b.BRPoint.Y >= Height))
                 {
                     GobjectList.Remove(ball);
                     BallList.Remove(ball);
