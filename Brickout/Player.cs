@@ -12,11 +12,13 @@ namespace Brickout
     {
         public int Life;
         private Vector2 BasePosition;
+        private Vector2 BaseSize;
         public Player(Vector2 position) : base(position, new Vector2(160, 30), new RawRectangleF(115, 72, 180, 86))
         {
             Life = 5;
             Speed = 0.5f;
             BasePosition = position;
+            BaseSize = Size;
         }
         public bool IsValidMovementLeft(Player player, Gameboard gameboard)
         {
@@ -34,6 +36,7 @@ namespace Brickout
         {
             Life--;
             Position = BasePosition;
+            Size = BaseSize;
         }
      
     }

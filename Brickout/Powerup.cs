@@ -64,6 +64,11 @@ namespace Brickout
                             ball.BallImbalanced = true;
                             ball.BallImbaNow.Start();
                         }
+                        else
+                        {
+                            Effect = Random.Next(3);
+                            UsePowerup(player, gObjectList, gameboard, BallList);
+                        }
                         break;
                     case 4://double ball
                         if (PowerupID == 1)
@@ -71,6 +76,11 @@ namespace Brickout
                             Ball ballNew = new Ball(ball);
                             gObjectList.Add(ballNew);
                             BallList.Add(ballNew);
+                        }
+                        else
+                        {
+                            Effect = Random.Next(3);
+                            UsePowerup(player, gObjectList, gameboard, BallList);
                         }
                         break;
                     default: return;
