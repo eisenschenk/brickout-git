@@ -38,7 +38,7 @@ namespace Brickout
         }
         public void FillList(int width, int height, List<GameObject> gObList)
         {
-            Ball ball = new Ball(new Player(new Vector2(0, 0)));
+            Ball ball = new Ball();
             //schleife für gleichmäßige verteilung der bricks
             for (int outerIndex = 0; outerIndex < GameBoard.Length; outerIndex++)
                 for (int innerIndex = 0; innerIndex < GameBoard[outerIndex].Length; innerIndex++)

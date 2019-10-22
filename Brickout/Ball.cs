@@ -14,35 +14,39 @@ namespace Brickout
         public bool BallImbalanced;
         public Stopwatch BallImbaNow = new Stopwatch();
         public readonly TimeSpan BallImbaWindow = TimeSpan.FromSeconds(10);
-        public Ball(Player player) : base(new Vector2(player.Position.X + player.Size.X / 2, player.Position.Y - 25), new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
+        private List<Ball> BallList;
+        public override RawRectangleF Sprite => GetSprite();
+        public Ball(Player player, List<Ball> ballList) : base(new Vector2(player.Position.X + player.Size.X / 2, player.Position.Y - 25),
+            new Vector2(20, 20), new RawRectangleF(48, 136, 56, 144))
         {
             Speed = 200;
             Direction = new Vector2(0, 0);
+            BallList = ballList;
         }
         private Ball(Vector2 position, Vector2 size, RawRectangleF sprite, float speed, Vector2 direction) : base(position, size, sprite)
         {
             Speed = speed;
             Direction = direction;
         }
+        public Ball() : base(new Vector2(0, 0), new Vector2(20, 20), new RawRectangleF()) { }
         public Ball Split()
         {
-            return new Ball(Position, Size, Sprite, Speed, Direction*new Vector2(-1,1));
+            return new Ball(Position, Size, Sprite, Speed, Direction * new Vector2(-1, 1));
         }
         public Vector2 BRPoint
         {
             get => Position + Size;
             set => Position = value - Size;
         }
-        public void Color(BallColor color)
+
+        private RawRectangleF GetSprite()
         {
-            switch (color)
-            {
-                case BallColor.Green: Sprite = new RawRectangleF(57, 136, 65, 144); break;
-                case BallColor.Red: Sprite = new RawRectangleF(66, 136, 74, 144); break;
-                case BallColor.Purple: Sprite = new RawRectangleF(75, 136, 83, 144); break;
-                case BallColor.Blue:
-                case BallColor.Unset: Sprite = new RawRectangleF(48, 136, 56, 144); break;
-            }
+            if (BallImbalanced)
+                return new RawRectangleF(66, 136, 74, 144);
+            else if (BallList.Count > 1)
+                return new RawRectangleF(57, 136, 65, 144);
+            else
+                return new RawRectangleF(48, 136, 56, 144);
         }
         public Vector2 Bounce(Intersection intersection, LineSegment ballLine, Gameboard gameboard)
         {
@@ -66,13 +70,5 @@ namespace Brickout
                 return Bounce();
         }
 
-    }
-    enum BallColor
-    {
-        Unset,
-        Blue,
-        Green,
-        Red,
-        Purple,
     }
 }

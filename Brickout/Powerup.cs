@@ -40,7 +40,7 @@ namespace Brickout
         public void UsePowerup(Player player, List<GameObject> gObjectList, Gameboard gameboard, List<Ball> BallList)
         {
             Player playerBase = new Player(new Vector2(0, 0));
-            Ball ballBase = new Ball(playerBase);
+            Ball ballBase = new Ball(playerBase, BallList);
             foreach (Ball ball in BallList.ToArray())
                 switch (Effect)
                 {
@@ -86,7 +86,6 @@ namespace Brickout
             Ball ballNew = ball.Split();
             gObjectList.Add(ballNew);
             BallList.Add(ballNew);
-            BallList.ForEach(b => b.Color(BallColor.Green));
         }
     }
     enum PowerUpEffect

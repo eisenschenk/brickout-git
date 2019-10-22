@@ -14,7 +14,7 @@ namespace Brickout
         public Vector2 Position;
         public Vector2 Size;
         public Vector2 Direction;
-        public RawRectangleF Sprite;
+        public virtual RawRectangleF Sprite { get; }
         public float Speed;
         private bool intersectLeft;
         private bool intersectRight;
@@ -29,6 +29,7 @@ namespace Brickout
         public virtual LineSegment GetRightBorder(GameObject ball) => new LineSegment(topRight(ball), botRight(ball));
         public virtual LineSegment GetTopBorder(GameObject ball) => new LineSegment(topLeft(ball), topRight(ball));
         public virtual LineSegment GetBottomBorder(GameObject ball) => new LineSegment(botLeft(ball), botRight(ball));
+
 
         public GameObject(Vector2 position, Vector2 size, RawRectangleF sprite)
         {

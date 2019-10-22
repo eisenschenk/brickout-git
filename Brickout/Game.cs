@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 namespace Brickout
 {
     //ball --> color to ball
-    //powerups -->enum
     class Game : IDisposable
     {
         private List<GameObject> GobjectList = new List<GameObject>();
@@ -26,7 +25,6 @@ namespace Brickout
         private float Elapsed;
         private int Width;
         private int Height;
-        private bool Paused;
         private DirectInput DirectInput;
         private Keyboard Keyboard;
         private Bitmap Tileset;
@@ -167,8 +165,6 @@ namespace Brickout
                 {
                     GobjectList.Remove(ball);
                     BallList.Remove(ball);
-                    if (BallList.Count == 1 && !BallList[0].BallImbalanced)
-                        BallList[0].Color(BallColor.Blue);
                     if (BallList.Count <= 0)
                     {
                         Player.LifeLost();
@@ -233,16 +229,12 @@ namespace Brickout
         {
             if (ball.BallImbalanced)
             {
-                BallList.ForEach(b => b.Color(BallColor.Red));
                 GobjectList = GobjectList.Except(isHitList.OfType<Brick>()).ToList();
                 Score += isHitList.OfType<Brick>().Sum(b => b.ScorePoints);
                 isHitList.OfType<Brick>().Where(b => b.BrickID == 9).ToList().ForEach(p => PowerupBrickHit(p));
                 isHitList = isHitList.Where(g => !(g is Brick)).ToList();
                 if (ball.BallImbaNow.Elapsed > ball.BallImbaWindow)
-                    if (BallList.Count == 1)
-                        BallList.ForEach(b => { b.Color(BallColor.Unset); b.BallImbalanced = false; });
-                    else
-                        BallList.ForEach(b => { b.Color(BallColor.Green); b.BallImbalanced = false; });
+                    BallList.ForEach(b => b.BallImbalanced = false);
             }
             return isHitList;
         }
@@ -278,7 +270,7 @@ namespace Brickout
         }
         private Ball CreateBall()
         {
-            Ball ball = new Ball(Player);
+            Ball ball = new Ball(Player, BallList);
             GobjectList.Add(ball);
             BallList.Add(ball);
             return ball;
