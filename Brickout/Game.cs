@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Brickout
 {
-    // player life --> value not shown
     class Game : IDisposable
     {
         List<GameObject> GobjectList = new List<GameObject>();
@@ -81,28 +80,28 @@ namespace Brickout
                 Player.Position.X += Player.Speed;
             if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero && Player.Life >= 0)
                 Ball.Direction = new Vector2(0, -1);
-            //debug player,ball
-            Player playerBase = new Player(new Vector2(0, 0));
-            Ball ballBase = new Ball(playerBase);
-            //debug playerSize+
-            if (keyboard.IsPressed(Key.F1))
-            {
-                Player.Size.X += playerBase.Size.X / 3;
-                if (!Gameboard.IncludesGameObject(Player))
-                    Player.Position.X = Gameboard.Width - Player.Size.X;
-            }
-            //debug playerSize-
-            if (keyboard.IsPressed(Key.F2))
-                Player.Size.X -= playerBase.Size.X / 3;
-            //debug ball imba
-            if (keyboard.IsPressed(Key.F7))
-            {
-                Ball.BallImbalanced = true;
-                Ball.BallImbaNow.Start();
-            }
-            //debug ball split
-            if (keyboard.IsPressed(Key.F8))
-                GobjectList.Add(new Ball(Ball));
+            ////debug player,ball
+            //Player playerBase = new Player(new Vector2(0, 0));
+            //Ball ballBase = new Ball(playerBase);
+            ////debug playerSize+
+            //if (keyboard.IsPressed(Key.F1))
+            //{
+            //    Player.Size.X += playerBase.Size.X / 3;
+            //    if (!Gameboard.IncludesGameObject(Player))
+            //        Player.Position.X = Gameboard.Width - Player.Size.X;
+            //}
+            ////debug playerSize-
+            //if (keyboard.IsPressed(Key.F2))
+            //    Player.Size.X -= playerBase.Size.X / 3;
+            ////debug ball imba
+            //if (keyboard.IsPressed(Key.F7))
+            //{
+            //    Ball.BallImbalanced = true;
+            //    Ball.BallImbaNow.Start();
+            //}
+            ////debug ball split
+            //if (keyboard.IsPressed(Key.F8))
+            //    GobjectList.Add(new Ball(Ball));
 
             MoveGameObjetcs();
         }
@@ -153,14 +152,12 @@ namespace Brickout
                     {
                         Player.LifeLost();
                         Ball = CreateBall();
-
                     }
                 }
         }
         private void BounceAndMoveBall()
         {
             foreach (GameObject gObject in GobjectList.ToArray())
-            {
                 if (gObject is Ball)
                 {
 
@@ -171,7 +168,6 @@ namespace Brickout
                     Line ballLine = new Line(ball.BRPoint, newBallPosition);
                     BounceAndMove(ballLine, ball);
                 }
-            }
         }
 
         private bool BounceAndMove(Line ballLine, Ball ball)
@@ -199,8 +195,6 @@ namespace Brickout
                 ball.Direction.Normalize();
                 ball.Position += ball.Direction * ball.Speed * Elapsed;
             }
-
-
             return isHit;
         }
         private void BouncesBall(Intersection intersection, Line ballLine, GameObject[] isHitArray, Ball ball)
