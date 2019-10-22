@@ -34,6 +34,7 @@ namespace Brickout
             return Random.Next(5);
         }
 
+        //TODO: ENUM
         public void UsePowerup(Player player, List<GameObject> gObjectList, Gameboard gameboard, List<Ball> BallList)
         {
             Player playerBase = new Player(new Vector2(0, 0));
@@ -73,10 +74,10 @@ namespace Brickout
                     case 4://double ball
                         if (PowerupID == 1)
                         {
-                            Ball ballNew = new Ball(ball);
+                            Ball ballNew = ball.Split();
                             gObjectList.Add(ballNew);
                             BallList.Add(ballNew);
-                            BallList.ForEach(b => b.Color("green"));
+                            BallList.ForEach(b => b.Color(BallColor.Green));
                         }
                         else
                         {//setting effect, redoing UsePowerup

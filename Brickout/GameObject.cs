@@ -25,10 +25,10 @@ namespace Brickout
         private Vector2 botLeft(GameObject ball) => new Vector2(Position.X, Position.Y + ball.Size.Y + Size.Y);
         private Vector2 botRight(GameObject ball) => new Vector2(Position.X + Size.X + ball.Size.X, Position.Y + Size.Y + ball.Size.Y);
 
-        public virtual Line GetLeftBorder(GameObject ball) => new Line(topLeft(ball), botLeft(ball));
-        public virtual Line GetRightBorder(GameObject ball) => new Line(topRight(ball), botRight(ball));
-        public virtual Line GetTopBorder(GameObject ball) => new Line(topLeft(ball), topRight(ball));
-        public virtual Line GetBottomBorder(GameObject ball) => new Line(botLeft(ball), botRight(ball));
+        public virtual LineSegment GetLeftBorder(GameObject ball) => new LineSegment(topLeft(ball), botLeft(ball));
+        public virtual LineSegment GetRightBorder(GameObject ball) => new LineSegment(topRight(ball), botRight(ball));
+        public virtual LineSegment GetTopBorder(GameObject ball) => new LineSegment(topLeft(ball), topRight(ball));
+        public virtual LineSegment GetBottomBorder(GameObject ball) => new LineSegment(botLeft(ball), botRight(ball));
 
         public GameObject(Vector2 position, Vector2 size, RawRectangleF sprite)
         {
@@ -41,7 +41,7 @@ namespace Brickout
             Direction.Normalize();
             Position += Direction * Speed * elapsed;
         }
-        public bool ObjectIsHitting(Line ballLine, GameObject ball)
+        public bool ObjectIsHitting(LineSegment ballLine, GameObject ball)
         {
             Vector2 nullVector = new Vector2(0, 0);
             intersectLeft = (nullVector != GetLeftBorder(ball).LineSegmentIntersection(ballLine));
@@ -51,10 +51,10 @@ namespace Brickout
 
             return (intersectLeft || intersectRight || intersectTop || intersectBottom);
         }
-        public static Intersection GetIntersection(Line ballLine, GameObject ball, List<GameObject> gObjectList, List<GameObject> isHitList)
+        public static Intersection GetIntersection(LineSegment ballLine, GameObject ball, List<GameObject> gObjectList, List<GameObject> isHitList)
         {
             List<Intersection> intersectionList = new List<Intersection>();
-            void AddBorderToList(Line line, GameObject gObject)
+            void AddBorderToList(LineSegment line, GameObject gObject)
             {
                 if (!line.LineSegmentIntersection(ballLine).IsZero)
                     intersectionList.Add(new Intersection(gObject, line, ballLine, gObjectList.IndexOf(gObject)));

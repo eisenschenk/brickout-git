@@ -19,14 +19,14 @@ namespace Brickout
         public int[][] GameBoard;
         public int MarginTop;
 
-        public override Line GetLeftBorder(GameObject ball) => 
-            new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(ball.Size.X, Height + ball.Size.Y));
-        public override Line GetTopBorder(GameObject ball) => 
-            new Line(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(Width, ball.Size.Y));
-        public override Line GetRightBorder(GameObject ball) =>
-            new Line(new Vector2(Width, ball.Size.Y), new Vector2(Width, Height + ball.Size.Y));
-        public override Line GetBottomBorder(GameObject ball) => 
-            new Line(new Vector2(ball.Size.X, Height + ball.Size.Y), new Vector2(Width, Height + ball.Size.Y));
+        public override LineSegment GetLeftBorder(GameObject ball) => 
+            new LineSegment(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(ball.Size.X, Height + ball.Size.Y));
+        public override LineSegment GetTopBorder(GameObject ball) => 
+            new LineSegment(new Vector2(ball.Size.X, ball.Size.Y), new Vector2(Width, ball.Size.Y));
+        public override LineSegment GetRightBorder(GameObject ball) =>
+            new LineSegment(new Vector2(Width, ball.Size.Y), new Vector2(Width, Height + ball.Size.Y));
+        public override LineSegment GetBottomBorder(GameObject ball) => 
+            new LineSegment(new Vector2(ball.Size.X, Height + ball.Size.Y), new Vector2(Width, Height + ball.Size.Y));
         public Gameboard(int width, int height, string level, List<GameObject> gObList)
             : base(new Vector2(0, 0), new Vector2(width, height), new RawRectangleF())
         {

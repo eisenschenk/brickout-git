@@ -19,28 +19,32 @@ namespace Brickout
             Speed = 200;
             Direction = new Vector2(0, 0);
         }
-        public Ball(Ball ball) : base(ball.Position, ball.Size, ball.Sprite)
+        private Ball(Vector2 position, Vector2 size, RawRectangleF sprite, float speed, Vector2 direction) : base(position, size, sprite)
         {
-            Speed = ball.Speed;
-            Direction = ball.Direction;
-            Direction.X = ball.Direction.X * -1;
+            Speed = speed;
+            Direction = direction;
+        }
+        public Ball Split()
+        {
+            return new Ball(Position, Size, Sprite, Speed, Direction*new Vector2(-1,1));
         }
         public Vector2 BRPoint
         {
             get => Position + Size;
             set => Position = value - Size;
         }
-        public void Color(string color)
+        public void Color(BallColor color)
         {
             switch (color)
             {
-                case "green": Sprite = new RawRectangleF(57, 136, 65, 144); break;
-                case "red": Sprite = new RawRectangleF(66, 136, 74, 144); break;
-                case "purple": Sprite = new RawRectangleF(75, 136, 83, 144); break;
-                default: Sprite = new RawRectangleF(48, 136, 56, 144); break;
+                case BallColor.Green: Sprite = new RawRectangleF(57, 136, 65, 144); break;
+                case BallColor.Red: Sprite = new RawRectangleF(66, 136, 74, 144); break;
+                case BallColor.Purple: Sprite = new RawRectangleF(75, 136, 83, 144); break;
+                case BallColor.Blue:
+                case BallColor.Unset: Sprite = new RawRectangleF(48, 136, 56, 144); break;
             }
         }
-        public Vector2 Bounce(Intersection intersection, Line ballLine, Gameboard gameboard)
+        public Vector2 Bounce(Intersection intersection, LineSegment ballLine, Gameboard gameboard)
         {
             Vector2 Bounce()
             {
@@ -62,5 +66,13 @@ namespace Brickout
                 return Bounce();
         }
 
+    }
+    enum BallColor
+    {
+        Unset,
+        Blue,
+        Green,
+        Red,
+        Purple,
     }
 }

@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace Brickout
 {
-    class Line
+    class LineSegment
     {
         public Vector2 Start;
         public Vector2 End;
         public Vector2 Vector => new Vector2(End.X - Start.X, End.Y - Start.Y);
-        public Line(Vector2 start, Vector2 end)
+        public LineSegment(Vector2 start, Vector2 end)
         {
             Start = start;
             End = end;
         }
         //calculation: http://www.cs.swan.ac.uk/~cssimon/line_intersection.html
-        public Vector2 LineSegmentIntersection(Line line)
+        public Vector2 LineSegmentIntersection(LineSegment line)
         {
             float tA = -1;
             float tB = -1;

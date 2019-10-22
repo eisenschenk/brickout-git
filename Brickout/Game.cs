@@ -6,28 +6,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Brickout
 {
     class Game : IDisposable
     {
-        List<GameObject> GobjectList = new List<GameObject>();
-        List<Powerup> PowerupList = new List<Powerup>();
-        List<Ball> BallList = new List<Ball>();
-        public Player Player;
-        public Ball Ball;
-        public Gameboard Gameboard;
-        public Random Random = new Random();
-        public Vector2 BallSize = new Vector2(20, 20);
-        public float Elapsed;
-        public int Width;
-        public int Height;
-        DirectInput DirectInput;
-        Keyboard Keyboard;
-        Bitmap Tileset;
-        Color4 BackgroundColor;
-        int Score;
+        private List<GameObject> GobjectList = new List<GameObject>();
+        private List<Powerup> PowerupList = new List<Powerup>();
+        private List<Ball> BallList = new List<Ball>();
+        private Player Player;
+        private Ball Ball;
+        private Gameboard Gameboard;
+        private Random Random = new Random();
+        private Vector2 BallSize = new Vector2(20, 20);
+        private float Elapsed;
+        private int Width;
+        private int Height;
+        private bool Paused;
+        private DirectInput DirectInput;
+        private Keyboard Keyboard;
+        private Bitmap Tileset;
+        private Color4 BackgroundColor;
+        private int Score;
 
         private IEnumerable<TextCharacter> AllCharacters => TextCharacter.GetOutput($"Score: {Score}", new Vector2(8, 2))
             .Concat(TextCharacter.GetOutput($"Life: {Player.Life}", new Vector2(Width - 120, 2)));
@@ -80,6 +82,8 @@ namespace Brickout
                 Player.Position.X += Player.Speed;
             if (keyboard.IsPressed(Key.Space) && Ball.Direction.IsZero && Player.Life >= 0)
                 Ball.Direction = new Vector2(0, -1);
+            //if (keyboard.IsPressed(Key.Escape))
+            //    Pause(keyboard);
             ////debug player,ball
             //Player playerBase = new Player(new Vector2(0, 0));
             //Ball ballBase = new Ball(playerBase);
@@ -105,7 +109,20 @@ namespace Brickout
 
             MoveGameObjetcs();
         }
-
+        //private void Pause(KeyboardState keyboard)
+        //{
+        //    if (Paused)
+        //    {
+        //        while (Paused)
+        //            if (keyboard.IsPressed(Key.Escape))
+        //                Paused = false;
+        //    }
+        //    else
+        //    {
+        //        Paused = true;
+        //        keyboard.Update()
+        //    }
+        //}
         //ToDo
         private void GameOver()
         {
@@ -117,7 +134,7 @@ namespace Brickout
             {
                 pU.Direction.Normalize();
                 Vector2 newPuPosition = pU.BRPoint + pU.Direction * Elapsed * pU.Speed;
-                Line pULine = new Line(pU.BRPoint, newPuPosition);
+                LineSegment pULine = new LineSegment(pU.BRPoint, newPuPosition);
                 List<GameObject> isHitList = new List<GameObject>();
                 isHitList = GobjectList
                                .Where(g => g is Player)
@@ -149,7 +166,7 @@ namespace Brickout
                     GobjectList.Remove(ball);
                     BallList.Remove(ball);
                     if (BallList.Count == 1 && !BallList[0].BallImbalanced)
-                        BallList[0].Color("blue");
+                        BallList[0].Color(BallColor.Blue);
                     if (BallList.Count <= 0)
                     {
                         Player.LifeLost();
@@ -159,18 +176,16 @@ namespace Brickout
         }
         private void BounceAndMoveBall()
         {
-            foreach (GameObject gObject in GobjectList.ToArray())
-                if (gObject is Ball)
-                {
-                    Ball ball = (Ball)gObject;
-                    ball.Direction.Normalize();
-                    Vector2 newBallPosition = ball.BRPoint + ball.Direction * ball.Speed * Elapsed;
-                    Line ballLine = new Line(ball.BRPoint, newBallPosition);
-                    BounceAndMove(ballLine, ball);
-                }
+            foreach (Ball ball in GobjectList.OfType<Ball>().ToArray())
+            {
+                ball.Direction.Normalize();
+                Vector2 newBallPosition = ball.BRPoint + ball.Direction * ball.Speed * Elapsed;
+                LineSegment ballLine = new LineSegment(ball.BRPoint, newBallPosition);
+                BounceAndMove(ballLine, ball);
+            }
         }
 
-        private bool BounceAndMove(Line ballLine, Ball ball)
+        private bool BounceAndMove(LineSegment ballLine, Ball ball)
         {
             bool isHit = default;
             List<GameObject> isHitList = new List<GameObject>();
@@ -194,7 +209,7 @@ namespace Brickout
                 ball.Move(Elapsed);
             return isHit;
         }
-        private void BouncesBall(Intersection intersection, Line ballLine, GameObject[] isHitArray, Ball ball)
+        private void BouncesBall(Intersection intersection, LineSegment ballLine, GameObject[] isHitArray, Ball ball)
         {
             ball.Direction = ball.Bounce(intersection, ballLine, Gameboard);
             ball.BRPoint = intersection.IntersectionPoint;
@@ -202,7 +217,7 @@ namespace Brickout
             ball.Direction.Normalize();
             ball.Direction *= intersection.LengthAfterIntersection;
             ball.BRPoint = intersection.IntersectionPoint + ball.Direction;
-            Line newBallLine = new Line(intersection.IntersectionPoint, intersection.IntersectionPoint + ball.Direction);
+            LineSegment newBallLine = new LineSegment(intersection.IntersectionPoint, intersection.IntersectionPoint + ball.Direction);
             GobjectList = GobjectList.Except(isHitArray).ToList();
             if (newBallLine.Start != newBallLine.End)
                 BounceAndMove(newBallLine, ball);
@@ -216,19 +231,20 @@ namespace Brickout
         {
             if (ball.BallImbalanced)
             {
-                BallList.ForEach(b => b.Color("red"));
+                BallList.ForEach(b => b.Color(BallColor.Red));
                 GobjectList = GobjectList.Except(isHitList.OfType<Brick>()).ToList();
                 Score += isHitList.OfType<Brick>().Select(b => b.ScorePoints).Sum();
                 isHitList.OfType<Brick>().Where(b => b.BrickID == 9).ToList().ForEach(p => PowerupBrickHit(p));
                 isHitList = isHitList.Where(g => !(g is Brick)).ToList();
                 if (ball.BallImbaNow.ElapsedMilliseconds > ball.BallImbaWindow.TotalMilliseconds)
                     if (BallList.Count == 1)
-                        BallList.ForEach(b => { b.Color(""); b.BallImbalanced = false; });
+                        BallList.ForEach(b => { b.Color(BallColor.Unset); b.BallImbalanced = false; });
                     else
-                        BallList.ForEach(b => { b.Color("green"); b.BallImbalanced = false; });
+                        BallList.ForEach(b => { b.Color(BallColor.Green); b.BallImbalanced = false; });
             }
             return isHitList;
         }
+        //TODO: in gameobjects/brick
         public void ReduceDurability(GameObject gObject)
         {
             if (gObject is Brick brick)
@@ -242,6 +258,7 @@ namespace Brickout
                 }
             }
         }
+        //TODO: in gameobjects/brick
         public void PowerupBrickHit(Brick brick)
         {
             if (brick.BrickID == 9)
