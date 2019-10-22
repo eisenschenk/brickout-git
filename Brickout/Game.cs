@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace Brickout
 {
+    //ball --> color to ball
+    //powerups -->enum
     class Game : IDisposable
     {
         private List<GameObject> GobjectList = new List<GameObject>();
@@ -233,10 +235,10 @@ namespace Brickout
             {
                 BallList.ForEach(b => b.Color(BallColor.Red));
                 GobjectList = GobjectList.Except(isHitList.OfType<Brick>()).ToList();
-                Score += isHitList.OfType<Brick>().Select(b => b.ScorePoints).Sum();
+                Score += isHitList.OfType<Brick>().Sum(b => b.ScorePoints);
                 isHitList.OfType<Brick>().Where(b => b.BrickID == 9).ToList().ForEach(p => PowerupBrickHit(p));
                 isHitList = isHitList.Where(g => !(g is Brick)).ToList();
-                if (ball.BallImbaNow.ElapsedMilliseconds > ball.BallImbaWindow.TotalMilliseconds)
+                if (ball.BallImbaNow.Elapsed > ball.BallImbaWindow)
                     if (BallList.Count == 1)
                         BallList.ForEach(b => { b.Color(BallColor.Unset); b.BallImbalanced = false; });
                     else

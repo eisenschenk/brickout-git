@@ -10,81 +10,45 @@ namespace Brickout
 {
     class Powerup : GameObject
     {
-        public int PowerupID;
-        public int Effect;
+        public int PowerupModifier;
+        public PowerUpEffect Effect;
         public Random Random;
         public Vector2 BRPoint
         {
             get => Position + Size;
             set => Position = value - Size;
         }
-        public Powerup(Vector2 position, int powerupID, Random random) : base(position, new Vector2(20, 20), ReturnRectangle(powerupID))
+        public Powerup(Vector2 position, int powerupModifier, Random random) : base(position, new Vector2(20, 20), ReturnRectangle(powerupModifier))
         {
-            PowerupID = powerupID;
+            PowerupModifier = powerupModifier;
             Random = random;
-            Effect = GetEffect(powerupID);
+            Effect = GetEffect(powerupModifier);
             Direction = new Vector2(0, 1);
             Speed = 50;
-            if (powerupID != 1)
-                PowerupID = -1;
+            if (powerupModifier != 1)
+                PowerupModifier = -1;
 
         }
-        private int GetEffect(int powerupID)
+        private PowerUpEffect GetEffect(int powerupID)
         {
-            return Random.Next(5);
+            if (powerupID == 1)
+                return (PowerUpEffect)Random.Next(5);
+            else
+                return (PowerUpEffect)Random.Next(3);
         }
 
-        //TODO: ENUM
         public void UsePowerup(Player player, List<GameObject> gObjectList, Gameboard gameboard, List<Ball> BallList)
         {
             Player playerBase = new Player(new Vector2(0, 0));
             Ball ballBase = new Ball(playerBase);
-
-
-            //playerSize abh. von PowerupId(entweder 1 oder -1)
-            if (Effect == 0 && player.Size.X < playerBase.Size.X * 2 && player.Size.X > playerBase.Size.X * 0.5f)
-            {
-                player.Size.X += PowerupID * playerBase.Size.X / 3;
-                if (!gameboard.IncludesGameObject(player))
-                    player.Position.X = gameboard.Width - player.Size.X;
-            }
             foreach (Ball ball in BallList.ToArray())
                 switch (Effect)
                 {
-                    case 1://ballSpeed abh. von PowerupId(entweder 1 oder -1)
-                        if (ball.Speed < ballBase.Speed * 1.5f && ball.Speed > ballBase.Speed * 0.2f)
-                            ball.Speed -= PowerupID * ballBase.Speed / 5;
-                        break;
-                    case 2://ballSize abh. von PowerupID(entweder 1 oder -1)
-                        if (ball.Size.X < ballBase.Size.X * 1.5f && ball.Size.X > ballBase.Size.X * 0.5f)
-                            ball.Size += PowerupID * ballBase.Size / 3;
-                        break;
-                    case 3:// ball kills all in its wake
-                        if (PowerupID == 1)
-                        {
-                            ball.BallImbalanced = true;
-                            ball.BallImbaNow.Start();
-                        }
-                        else
-                        {//setting effect, redoing UsePowerup
-                            Effect = Random.Next(3);
-                            UsePowerup(player, gObjectList, gameboard, BallList);
-                        }
-                        break;
-                    case 4://double ball
-                        if (PowerupID == 1)
-                        {
-                            Ball ballNew = ball.Split();
-                            gObjectList.Add(ballNew);
-                            BallList.Add(ballNew);
-                            BallList.ForEach(b => b.Color(BallColor.Green));
-                        }
-                        else
-                        {//setting effect, redoing UsePowerup
-                            Effect = Random.Next(3);
-                            UsePowerup(player, gObjectList, gameboard, BallList);
-                        }
-                        break;
+                    case PowerUpEffect.PlayerSize: PlayerSize(player, playerBase, gameboard); break;
+                    case PowerUpEffect.BallSpeed: BallSpeed(ball, ballBase); break;
+                    case PowerUpEffect.BallSize: BallSize(ball, ballBase); break;
+                    case PowerUpEffect.BallImba: BallImba(ball); break;
+                    case PowerUpEffect.BallSplit: BallSplit(gObjectList, BallList, ball); break;
                     default: return;
                 }
         }
@@ -94,9 +58,43 @@ namespace Brickout
                 return new RawRectangleF(238, 176, 251, 191);
             else
                 return new RawRectangleF(328, 176, 341, 191);
-
-
         }
-
+        public void PlayerSize(Player player, Player playerBase, Gameboard gameboard)
+        {
+            if (player.Size.X < playerBase.Size.X * 2 && player.Size.X > playerBase.Size.X * 0.5f)
+                player.Size.X += PowerupModifier * playerBase.Size.X / 3;
+            if (!gameboard.IncludesGameObject(player))
+                player.Position.X = gameboard.Width - player.Size.X;
+        }
+        public void BallSpeed(Ball ball, Ball ballBase)
+        {
+            if (ball.Speed < ballBase.Speed * 1.5f && ball.Speed > ballBase.Speed * 0.2f)
+                ball.Speed -= PowerupModifier * ballBase.Speed / 5;
+        }
+        public void BallSize(Ball ball, Ball ballBase)
+        {
+            if (ball.Size.X < ballBase.Size.X * 1.5f && ball.Size.X > ballBase.Size.X * 0.5f)
+                ball.Size += PowerupModifier * ballBase.Size / 3;
+        }
+        private void BallImba(Ball ball)
+        {
+            ball.BallImbalanced = true;
+            ball.BallImbaNow.Start();
+        }
+        private void BallSplit(List<GameObject> gObjectList, List<Ball> BallList, Ball ball)
+        {
+            Ball ballNew = ball.Split();
+            gObjectList.Add(ballNew);
+            BallList.Add(ballNew);
+            BallList.ForEach(b => b.Color(BallColor.Green));
+        }
+    }
+    enum PowerUpEffect
+    {
+        PlayerSize,
+        BallSpeed,
+        BallSize,
+        BallImba,
+        BallSplit,
     }
 }
