@@ -22,7 +22,6 @@ namespace Brickout
             ScorePoints = brickID * 10;
             BrickID = brickID;
         }
-        //TODO: brickID-->bricktype enum
         private static readonly Dictionary<int, int> BrickIDToSpriteID = new Dictionary<int, int>
         {
             [1] = 14,

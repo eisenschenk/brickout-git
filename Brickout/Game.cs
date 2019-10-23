@@ -238,7 +238,7 @@ namespace Brickout
             return isHitList;
         }
         //TODO: in gameobjects/brick
-        public void ReduceDurability(GameObject gObject)
+        private void ReduceDurability(GameObject gObject)
         {
             if (gObject is Brick brick)
             {
@@ -252,7 +252,7 @@ namespace Brickout
             }
         }
         //TODO: in gameobjects/brick
-        public void PowerupBrickHit(Brick brick)
+        private void PowerupBrickHit(Brick brick)
         {
             if (brick.BrickID == 9)
             {
@@ -263,7 +263,7 @@ namespace Brickout
                 GobjectList.Add(powerup);
             }
         }
-        public Player CreatePlayer()
+        private Player CreatePlayer()
         {
             return new Player(new Vector2(Width / 2f, Height - 55));
         }

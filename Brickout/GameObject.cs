@@ -44,7 +44,7 @@ namespace Brickout
         }
         public bool ObjectIsHitting(LineSegment ballLine, GameObject ball)
         {
-            Vector2 nullVector = new Vector2(0, 0);
+            var nullVector = new Vector2(0, 0);
             intersectLeft = (nullVector != GetLeftBorder(ball).LineSegmentIntersection(ballLine));
             intersectRight = (nullVector != GetRightBorder(ball).LineSegmentIntersection(ballLine));
             intersectTop = (nullVector != GetTopBorder(ball).LineSegmentIntersection(ballLine));
